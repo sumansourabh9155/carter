@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Tally design system — refined LIGHT theme, deep-orange brand accent.
+  Chrome is deliberately quiet (near-neutral surfaces, hairline borders,
+  ONE accent) so the DATA carries the color: the chart palette is richer
+  and CVD-validated (see lib/chartTheme.js). Tokens live on :root.
+*/
+:root {
+  --radius: 0.75rem;
+
+  --background: #f8f8f6;       /* near-neutral paper — calm, established */
+  --foreground: #1c1917;       /* warm near-black (stone-900) */
+
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+
+  --primary: #c2410c;          /* orange-700 — deeper, more formal accent */
+  --primary-foreground: #ffffff;
+
+  --secondary: #f1f1ee;        /* neutral light wash */
+  --secondary-foreground: #44403c;
+
+  --muted: #f1f1ee;
+  --muted-foreground: #78716c; /* stone-500 — 4.6:1 on white */
+
+  --accent: #f7ede2;           /* quiet warm wash (hover/selected) */
+  --accent-foreground: #9a3412;/* orange-800 */
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --success: #16a34a;          /* green-600 */
+  --success-foreground: #ffffff;
+
+  --warning: #d97706;          /* amber-600 */
+  --warning-foreground: #ffffff;
+
+  --border: #e6e5df;           /* neutral hairline */
+  --input: #dddcd5;
+  --ring: #c2410c;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #57534e;
+
+  /* CVD-validated categorical chart palette (dataviz-checked) */
+  --chart-1: #eb6834; /* orange — revenue (brand tie-in) */
+  --chart-2: #2a78d6; /* blue   — CM1 */
+  --chart-3: #4a3aa7; /* violet — CM2 */
+  --chart-4: #1baf7a; /* green  — CM3 / profit */
+  --chart-5: #eda100; /* yellow — ad spend */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.22);
+  }
+}
+
+/* numeric / financial figures */
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
