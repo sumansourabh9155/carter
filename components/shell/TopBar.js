@@ -55,7 +55,7 @@ export function TopBar({ signals = {} }) {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-2 bg-brand-900 px-4">
       {/* Brand cluster */}
-      <Link href="/dashboard" className="flex shrink-0 items-center gap-2">
+      <Link href="/insights" className="flex shrink-0 items-center gap-2">
         <CarterMark />
         <span className="h-4 w-px shrink-0 rounded-full bg-brand-700" />
         <span className="text-[20px] font-semibold leading-7 text-white">Carter</span>

@@ -6,7 +6,6 @@ import { getDataCollection, updateSkuData } from "@/lib/api";
 import { useAsync } from "@/lib/useAsync";
 import { deriveSku } from "@/lib/compute/margin";
 import { computeCompleteness, overallReadiness } from "@/lib/dataFields";
-import { PageHeader, PageContainer } from "@/components/PageHeader";
 import { ProductThumb } from "@/components/ProductThumb";
 import { SkuDetailSheet } from "@/components/data/SkuDetailSheet";
 import { Card } from "@/components/ui/card";
@@ -129,7 +128,7 @@ function ImportDialog() {
   );
 }
 
-export default function DataCollectionPage() {
+export function CostInputs() {
   const { data, loading } = useAsync(() => getDataCollection(), []);
   const [rows, setRows] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -156,22 +155,16 @@ export default function DataCollectionPage() {
   }
 
   return (
-    <PageContainer>
-      <PageHeader
-        eyebrow="Feed the engine"
-        title="Data Collection"
-        description="Shopify gives us sales. You give us the costs and operations it can't — the inputs that make margins true and predictions accurate."
-      >
-        <ImportDialog />
-      </PageHeader>
-
+    <div className="space-y-6">
       {readiness ? <ReadinessPanel readiness={readiness} /> : <Skeleton className="h-32 w-full" />}
 
       <Card className="overflow-hidden p-0">
         <TableToolbar
           title="Cost inputs by SKU"
-          description="Locked columns are fetched from Shopify · editable columns are yours to fill."
-        />
+          description="Shopify gives us sales. You give us the costs it can't — the inputs that make margins true."
+        >
+          <ImportDialog />
+        </TableToolbar>
         <div className="flex items-center gap-2 border-y border-border bg-surface-subtle px-6 py-2.5 text-[12px] leading-4 text-muted-foreground">
           <Lock className="size-3.5 shrink-0" /> Locked columns are read-only.
         </div>
@@ -245,6 +238,6 @@ export default function DataCollectionPage() {
       </p>
 
       <SkuDetailSheet open={Boolean(selected)} onOpenChange={(o) => !o && setSelected(null)} sku={selected} onSave={saveSheet} />
-    </PageContainer>
+    </div>
   );
 }

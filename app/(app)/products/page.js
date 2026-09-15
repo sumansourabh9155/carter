@@ -24,6 +24,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CostInputs } from "@/components/data/CostInputs";
 import { money, pct, multiple } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -67,6 +69,7 @@ export default function ProductsPage() {
   const [filter, setFilter] = useState("all");
   const [lifecycle, setLifecycle] = useState("all");
   const [q, setQ] = useState("");
+  const [view, setView] = useState("performance");
 
   const rows = (products || [])
     .filter((p) => (filter === "all" ? true : p.quadrant === filter))
@@ -81,7 +84,19 @@ export default function ProductsPage() {
         description="Fully-loaded contribution margin per SKU — CM1 → CM2 → CM3, computed from your real costs."
       />
 
-      <div className="flex flex-wrap items-center gap-3">
+      {/* Performance reads the margins; Cost inputs is where you feed them.
+          Same catalogue, two jobs — so they're modes of one page, not two
+          places in the nav. */}
+      <Tabs value={view} onValueChange={setView}>
+        <TabsList>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="costs">Cost inputs</TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      {view === "costs" && <CostInputs />}
+
+      <div className={cn("flex flex-wrap items-center gap-3", view !== "performance" && "hidden")}>
         <Select value={filter} onChange={(e) => setFilter(e.target.value)}>
           {FILTERS.map((f) => (
             <option key={f.id} value={f.id}>{f.id === "all" ? "All quadrants" : f.label}</option>
@@ -99,7 +114,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <Card className="overflow-hidden p-0">
+      <Card className={cn("overflow-hidden p-0", view !== "performance" && "hidden")}>
         {/* Section heading lives INSIDE the card, above the table — Carter's
             "Breadcrumb Container" pattern (title over subtitle). */}
         <TableToolbar

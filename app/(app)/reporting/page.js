@@ -70,7 +70,7 @@ function PaidVsEarnedStrip() {
       </div>
       <p className="mt-1.5 text-[11px] text-muted-foreground">
         The other {pct(Math.round((100 - paidPct) * 10) / 10)} comes from organic, direct, and email — earned demand that ad budget can't buy.{" "}
-        <Link href="/website" className="font-medium text-primary hover:underline">See where sessions come from →</Link>
+        <Link href="/pixel/funnel" className="font-medium text-primary hover:underline">See where sessions come from →</Link>
       </p>
     </Card>
   );
@@ -182,7 +182,7 @@ export default function MarketingPage() {
     <PageContainer>
       <PageHeader
         eyebrow="Your ad platforms, unified"
-        title="Marketing"
+        title="Reporting"
         description="The paid slice of your business in one command center — profit-true (CM-ROAS), honest about what platforms overclaim, and honest that ads are only part of how you sell."
       />
 
