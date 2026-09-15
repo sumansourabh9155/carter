@@ -24,7 +24,7 @@ export function ProjectionChart({ data, projFrom, height = 240 }) {
           <Legend
             iconType="plainline"
             wrapperStyle={{ fontSize: 11 }}
-            formatter={(v) => <span style={{ color: "#94a3b8" }}>{v}</span>}
+            formatter={(v) => <span style={{ color: "#a3b3bc" }}>{v}</span>}
           />
           <Line yAxisId="rev" type="monotone" dataKey="revenue" name="Revenue" stroke={CHART_COLORS.revenue} strokeWidth={2} dot={false} connectNulls />
           <Line yAxisId="rev" type="monotone" dataKey="revenueProj" name="Revenue (projected)" stroke={CHART_COLORS.revenue} strokeWidth={2} strokeDasharray="5 4" dot={false} connectNulls legendType="none" />

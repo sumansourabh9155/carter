@@ -34,10 +34,10 @@ const CONNECTED = [
 
 function ConnectedStrip() {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card px-3 py-2.5">
+    <div className="flex flex-wrap items-center gap-2 rounded-card shadow-ring bg-card px-3 py-2.5">
       <span className="text-xs font-medium text-muted-foreground">Unified from</span>
       {CONNECTED.map((c) => (
-        <span key={c.name} className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-2.5 py-1">
+        <span key={c.name} className="inline-flex items-center gap-1.5 rounded-full shadow-ring bg-card px-2.5 py-1">
           <img src={`/logos/${c.logo}`} alt="" className="size-3.5 object-contain" />
           <span className="text-xs font-medium">{c.name}</span>
         </span>
@@ -64,7 +64,7 @@ function PaidVsEarnedStrip() {
           {paid.toLocaleString()} paid · {(web.orders - paid).toLocaleString()} earned of {web.orders.toLocaleString()} orders
         </span>
       </div>
-      <div className="flex h-2.5 overflow-hidden rounded-full bg-black/[0.06]">
+      <div className="flex h-2.5 overflow-hidden rounded-full bg-ia-gray">
         <div className="h-full bg-primary" style={{ width: `${paidPct}%` }} />
         <div className="h-full bg-emerald-500/70" style={{ width: `${100 - paidPct}%` }} />
       </div>
@@ -93,7 +93,7 @@ function RecommendationCard({ rec }) {
   return (
     <Card className={cn("p-5", rec.urgent ? "border-destructive/25 bg-destructive/[0.03]" : "border-primary/25 bg-primary/[0.03]")}>
       <div className="flex items-start gap-3">
-        <span className={cn("grid size-9 shrink-0 place-items-center rounded-lg", rec.urgent ? "bg-destructive/15 text-destructive" : "bg-primary/15 text-primary")}>
+        <span className={cn("grid size-9 shrink-0 place-items-center rounded-input", rec.urgent ? "bg-destructive/15 text-destructive" : "bg-primary/15 text-primary")}>
           <Sparkles className="size-4.5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -135,10 +135,10 @@ function RecommendationCard({ rec }) {
                     <DialogHeader>
                       <DialogTitle>Confirm budget shift</DialogTitle>
                       <DialogDescription>
-                        This moves {money(rec.amount)}/week from {rec.from.name} to {rec.to.name} across your connected ad accounts. A person has to confirm this — Tally won't do it on its own yet.
+                        This moves {money(rec.amount)}/week from {rec.from.name} to {rec.to.name} across your connected ad accounts. A person has to confirm this — Carter won't do it on its own yet.
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="rounded-lg border border-border bg-black/[0.02] p-3 text-sm">
+                    <div className="rounded-input shadow-ring bg-ia-gray-faded p-3 text-sm">
                       <p>{rec.note}</p>
                       <p className="mt-1.5 text-xs text-muted-foreground">This is a directional estimate based on this period's performance — not a guaranteed outcome.</p>
                     </div>
@@ -167,7 +167,7 @@ function CustomerMixBar({ label, newPct, returningPct }) {
         <span className="font-medium text-muted-foreground">{label}</span>
         <span className="tabular text-muted-foreground">{pct(newPct)} new · {pct(returningPct)} returning</span>
       </div>
-      <div className="flex h-2.5 overflow-hidden rounded-full bg-black/[0.06]">
+      <div className="flex h-2.5 overflow-hidden rounded-full bg-ia-gray">
         <div className="h-full bg-primary" style={{ width: `${newPct}%` }} />
         <div className="h-full bg-sky-400" style={{ width: `${returningPct}%` }} />
       </div>
@@ -219,7 +219,7 @@ export default function MarketingPage() {
 
       {!loading && data && <RecommendationCard rec={data.recommendation} />}
 
-      <ChartCard title="Where the platforms disagree with your own data" subtitle="What each channel claims vs. what Tally can verify against real orders">
+      <ChartCard title="Where the platforms disagree with your own data" subtitle="What each channel claims vs. what Carter can verify against real orders">
         {loading || !data ? (
           <div className="space-y-2">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-20 w-full" />)}</div>
         ) : (
@@ -227,7 +227,7 @@ export default function MarketingPage() {
             {[...data.channels]
               .sort((a, b) => b.platformGapPct - a.platformGapPct)
               .map((c) => (
-                <div key={c.id} className="rounded-lg border border-border p-3">
+                <div key={c.id} className="rounded-input shadow-ring p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="inline-flex items-center gap-1.5 text-sm font-medium">
                       <span className="size-2 rounded-full" style={{ background: c.color }} />
@@ -239,7 +239,7 @@ export default function MarketingPage() {
                   </div>
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-5 gap-y-1 text-sm">
                     <span className="text-muted-foreground">Platform claims <span className="tabular font-semibold text-foreground">{money(c.platformReportedRevenue)}</span></span>
-                    <span className="text-muted-foreground">Tally verified <span className="tabular font-semibold text-foreground">{money(c.attributedRevenue)}</span></span>
+                    <span className="text-muted-foreground">Carter verified <span className="tabular font-semibold text-foreground">{money(c.attributedRevenue)}</span></span>
                     <span className={cn("tabular font-semibold", c.platformGapPct > 30 ? "text-destructive" : c.platformGapPct > 10 ? "text-warning" : "text-success")}>
                       +{pct(c.platformGapPct)} gap
                     </span>
@@ -278,7 +278,7 @@ export default function MarketingPage() {
 
         {!loading && data?.audienceLeak && (
           <Card className="mb-4 flex items-start gap-3 border-destructive/25 bg-destructive/[0.04] p-4">
-            <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-destructive/15 text-destructive">
+            <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-input bg-destructive/15 text-destructive">
               <MousePointerClick className="size-4" />
             </span>
             <p className="text-sm">

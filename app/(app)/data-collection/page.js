@@ -14,7 +14,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableToolbar,
+} from "@/components/ui/table";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogPrimitive } from "@/components/ui/dialog";
 import { money, pct } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -53,8 +61,8 @@ function ReadinessPanel({ readiness }) {
             <Sparkles className="size-3.5 text-primary" /> Model readiness
           </div>
           <div className="tabular mt-1 text-4xl font-semibold">{readiness.pct}%</div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-black/[0.06]">
-            <div className="h-full rounded-full bg-gradient-to-r from-orange-500 to-orange-700" style={{ width: `${readiness.pct}%` }} />
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-ia-gray">
+            <div className="h-full rounded-full bg-[image:var(--gradient-primary-button)]" style={{ width: `${readiness.pct}%` }} />
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
             More complete data = more accurate margins, forecasts, and suggestions.
@@ -64,8 +72,8 @@ function ReadinessPanel({ readiness }) {
           {readiness.predictions.map((p) => {
             const ready = p.ready === p.total;
             return (
-              <div key={p.id} className="flex items-center gap-3 rounded-lg border border-border bg-black/[0.02] px-3 py-2.5">
-                <span className={cn("grid size-7 shrink-0 place-items-center rounded-md", ready ? "bg-success/15 text-success" : "bg-warning/15 text-warning")}>
+              <div key={p.id} className="flex items-center gap-3 rounded-input shadow-ring bg-ia-gray-faded px-3 py-2.5">
+                <span className={cn("grid size-7 shrink-0 place-items-center rounded-button", ready ? "bg-success/15 text-success" : "bg-warning/15 text-warning")}>
                   {ready ? <Check className="size-4" /> : <TriangleAlert className="size-4" />}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -94,19 +102,19 @@ function ImportDialog() {
           <DialogDescription>Bulk-fill manufacturing, delivery, and supplier data from a spreadsheet.</DialogDescription>
         </DialogHeader>
         {done ? (
-          <div className="flex items-center gap-3 rounded-lg border border-success/30 bg-success/[0.06] p-4 text-sm">
+          <div className="flex items-center gap-3 rounded-input border border-success/30 bg-success/[0.06] p-4 text-sm">
             <Check className="size-4 text-success" /> Imported. Margins and predictions will recompute on the next sync.
           </div>
         ) : (
           <div className="space-y-3 text-sm">
             <p className="text-muted-foreground">Expected columns (SKU is the match key):</p>
-            <code className="block overflow-x-auto rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground/80">
+            <code className="block overflow-x-auto rounded-input shadow-ring bg-surface-subtle px-3 py-2 text-xs text-foreground/80">
               sku, manufacturing_cost, delivery_cost, packaging_cost, lead_time_days, moq, supplier, payment_terms
             </code>
             <textarea
               rows={4}
               placeholder="Paste CSV rows here…"
-              className="w-full resize-none rounded-lg border border-input bg-transparent p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="w-full resize-none rounded-input border border-input bg-transparent p-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
             />
           </div>
         )}
@@ -160,8 +168,12 @@ export default function DataCollectionPage() {
       {readiness ? <ReadinessPanel readiness={readiness} /> : <Skeleton className="h-32 w-full" />}
 
       <Card className="overflow-hidden p-0">
-        <div className="flex items-center gap-2 border-b border-border px-4 py-3 text-xs text-muted-foreground">
-          <Lock className="size-3.5" /> Locked columns are fetched from Shopify · editable columns are yours to fill
+        <TableToolbar
+          title="Cost inputs by SKU"
+          description="Locked columns are fetched from Shopify · editable columns are yours to fill."
+        />
+        <div className="flex items-center gap-2 border-y border-border bg-surface-subtle px-6 py-2.5 text-[12px] leading-4 text-muted-foreground">
+          <Lock className="size-3.5 shrink-0" /> Locked columns are read-only.
         </div>
         {loading || !rows ? (
           <div className="space-y-2 p-4">{[0, 1, 2, 3, 4, 5].map((i) => <Skeleton key={i} className="h-11 w-full" />)}</div>
@@ -210,7 +222,7 @@ export default function DataCollectionPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <div className="h-1.5 w-12 overflow-hidden rounded-full bg-black/[0.06]">
+                      <div className="h-1.5 w-12 overflow-hidden rounded-full bg-ia-gray">
                         <div className={cn("h-full rounded-full", c.pct === 100 ? "bg-success" : "bg-warning")} style={{ width: `${c.pct}%` }} />
                       </div>
                       <span className="tabular text-[11px] text-muted-foreground">{c.pct}%</span>

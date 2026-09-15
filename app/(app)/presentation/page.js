@@ -39,8 +39,8 @@ function ArrowDefs() {
         <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </marker>
       <linearGradient id="aiGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#fbbf24" />
-        <stop offset="100%" stopColor="#ea580c" />
+        <stop offset="0%" stopColor="#fb8c00" />
+        <stop offset="100%" stopColor="#ef6c00" />
       </linearGradient>
     </defs>
   );
@@ -52,10 +52,10 @@ function ArrowDefs() {
 
 function PipelineStrip() {
   const steps = [
-    { label: "Shopify + Ads + Costs", color: "#78716c" },
-    { label: "True Profit Engine", color: "#ea580c" },
-    { label: "5 Connected Questions", color: "#8b5cf6" },
-    { label: "One Answer", color: "#16a34a" },
+    { label: "Shopify + Ads + Costs", color: "#7d929e" },
+    { label: "True Profit Engine", color: "#ef6c00" },
+    { label: "5 Connected Questions", color: "#7b1fa2" },
+    { label: "One Answer", color: "#2e7d32" },
   ];
   return (
     <svg viewBox="0 0 860 90" width="100%" className="mt-2" role="img" aria-label="Data flows from Shopify, ads, and costs through the profit engine to one answer">
@@ -71,7 +71,7 @@ function PipelineStrip() {
               {s.label}
             </text>
             {i < steps.length - 1 && (
-              <line x1={x + w + 2} y1={45} x2={x + w + gap - 2} y2={45} stroke="#a8a29e" strokeWidth="1.5" markerEnd="url(#arrow)" />
+              <line x1={x + w + 2} y1={45} x2={x + w + gap - 2} y2={45} stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
             )}
           </g>
         );
@@ -80,7 +80,7 @@ function PipelineStrip() {
   );
 }
 
-// Two relatable founder stories — the major problems Tally solves, in the
+// Two relatable founder stories — the major problems Carter solves, in the
 // customer's own voice. Each pairs the felt pain with the hidden cause.
 const STORIES = [
   {
@@ -98,22 +98,22 @@ const STORIES = [
 function CoverSlide() {
   return (
     <div className="flex h-full flex-col items-center justify-center text-center">
-      <span className="mb-6 grid size-20 place-items-center rounded-[28px] bg-gradient-to-br from-amber-400 to-orange-600 text-white shadow-xl shadow-orange-600/20">
+      <span className="mb-6 grid size-20 place-items-center rounded-[28px] bg-[image:var(--gradient-primary-button)] text-white shadow-high">
         <Sparkles className="size-9" />
       </span>
-      <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Tally</p>
+      <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Carter</p>
       <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
         The Financial Operating System <span className="text-primary">for Shopify Brands</span>
       </h1>
       <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
-        Tally is a financial operating system for Shopify brands that reveals the true, fully-loaded profit of every product — after COGS, shipping, returns, and ad spend — so founders can see which products actually make money and which are quietly bleeding cash.
+        Carter is a financial operating system for Shopify brands that reveals the true, fully-loaded profit of every product — after COGS, shipping, returns, and ad spend — so founders can see which products actually make money and which are quietly bleeding cash.
       </p>
       <div className="mt-6 w-full max-w-3xl">
         <PipelineStrip />
       </div>
       <div className="mt-7 grid w-full max-w-2xl gap-3 text-left sm:grid-cols-2">
         {STORIES.map((s) => (
-          <div key={s.who} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <div key={s.who} className="rounded-card shadow-ring bg-card p-4">
             <p className="text-sm font-medium leading-snug text-foreground">{s.quote}</p>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{s.reveal}</p>
             <p className="mt-2.5 text-[11px] font-semibold uppercase tracking-wide text-primary">{s.who}</p>
@@ -138,18 +138,18 @@ const PROBLEMS = [
 
 // Five pillars, evenly laid out across the 860-wide canvas (w=152, step=167).
 const PILLAR_BOXES = [
-  { x: 20, label: "Margin", sub: "true CM per SKU", fill: "#e0f2fe", stroke: "#0ea5e9", text: "#075985" },
-  { x: 187, label: "Ads", sub: "CM-ROAS, not vanity", fill: "#ede9fe", stroke: "#8b5cf6", text: "#5b21b6" },
-  { x: 354, label: "Website", sub: "views → cart → sale", fill: "#fce7f3", stroke: "#ec4899", text: "#9d174e" },
-  { x: 521, label: "Supply", sub: "stock & lead time", fill: "#d1fae5", stroke: "#10b981", text: "#065f46" },
-  { x: 688, label: "Cash", sub: "what you can afford", fill: "#fef3c7", stroke: "#f59e0b", text: "#78350f" },
+  { x: 20, label: "Margin", sub: "true CM per SKU", fill: "#e5f4fd", stroke: "#0277bd", text: "#01579b" },
+  { x: 187, label: "Ads", sub: "CM-ROAS, not vanity", fill: "#e8ecfc", stroke: "#7b1fa2", text: "#1a2c8f" },
+  { x: 354, label: "Website", sub: "views → cart → sale", fill: "#e8ecfc", stroke: "#7b1fa2", text: "#1a2c8f" },
+  { x: 521, label: "Supply", sub: "stock & lead time", fill: "#e8f5e9", stroke: "#2e7d32", text: "#1b5e20" },
+  { x: 688, label: "Cash", sub: "what you can afford", fill: "#fff3e0", stroke: "#ef6c00", text: "#e65100" },
 ];
 
 // Compact connected-loop diagram — tightened vertical rhythm so it fits
 // alongside the problem strip on one slide, without losing any beat.
 function ConnectedLoopDiagram() {
   return (
-    <svg viewBox="0 0 860 380" width="100%" role="img" aria-label="Shopify, ad, and cost data feed a profit engine; margin, ads, supply, and cash are read together with cash capping ad spend, feeding Tally which returns one answer">
+    <svg viewBox="0 0 860 380" width="100%" role="img" aria-label="Shopify, ad, and cost data feed a profit engine; margin, ads, supply, and cash are read together with cash capping ad spend, feeding Carter which returns one answer">
       <ArrowDefs />
 
       {/* Inputs */}
@@ -159,27 +159,27 @@ function ConnectedLoopDiagram() {
         { x: 580, label: "You: real costs & ops data" },
       ].map((b) => (
         <g key={b.label}>
-          <rect x={b.x} y={8} width={260} height={40} rx={9} fill="#f5f5f4" stroke="#a8a29e" strokeWidth="1" />
-          <text x={b.x + 130} y={33} textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#57534e">
+          <rect x={b.x} y={8} width={260} height={40} rx={9} fill="#f2f5f7" stroke="#a3b3bc" strokeWidth="1" />
+          <text x={b.x + 130} y={33} textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#5f7682">
             {b.label}
           </text>
         </g>
       ))}
-      <line x1="150" y1="48" x2="150" y2="78" stroke="#a8a29e" strokeWidth="1.5" markerEnd="url(#arrow)" />
-      <line x1="430" y1="48" x2="430" y2="78" stroke="#a8a29e" strokeWidth="1.5" markerEnd="url(#arrow)" />
-      <line x1="710" y1="48" x2="710" y2="78" stroke="#a8a29e" strokeWidth="1.5" markerEnd="url(#arrow)" />
+      <line x1="150" y1="48" x2="150" y2="78" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
+      <line x1="430" y1="48" x2="430" y2="78" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
+      <line x1="710" y1="48" x2="710" y2="78" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
 
       {/* Engine */}
-      <rect x={20} y={80} width={820} height={46} rx={12} fill="#ffedd5" stroke="#ea580c" strokeWidth="1.3" />
-      <text x={430} y={101} textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#9a3412">
+      <rect x={20} y={80} width={820} height={46} rx={12} fill="#fff3e0" stroke="#ef6c00" strokeWidth="1.3" />
+      <text x={430} y={101} textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#1a2c8f">
         True Profit Engine
       </text>
-      <text x={430} y={118} textAnchor="middle" fontSize="10.5" fill="#9a3412">
+      <text x={430} y={118} textAnchor="middle" fontSize="10.5" fill="#1a2c8f">
         CM1 → CM2 → CM3 — your true profit, built from your real costs
       </text>
-      <line x1="430" y1="126" x2="430" y2="158" stroke="#a8a29e" strokeWidth="1.5" markerEnd="url(#arrow)" />
+      <line x1="430" y1="126" x2="430" y2="158" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
 
-      <text x={430} y={154} textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#78716c">
+      <text x={430} y={154} textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#7d929e">
         Read together, every time
       </text>
 
@@ -197,28 +197,28 @@ function ConnectedLoopDiagram() {
       ))}
 
       {/* Feedback bracket: Cash caps Ads — a right-angle connector under the pillar row */}
-      <path d="M 764 224 L 764 234 L 263 234 L 263 224" fill="none" stroke="#f59e0b" strokeWidth="1.6" strokeDasharray="5 4" markerEnd="url(#arrow)" />
-      <rect x={418} y={238} width={190} height={18} rx={5} fill="#fbf8f3" />
-      <text x={513} y={251} textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#b45309">
+      <path d="M 764 224 L 764 234 L 263 234 L 263 224" fill="none" stroke="#ef6c00" strokeWidth="1.6" strokeDasharray="5 4" markerEnd="url(#arrow)" />
+      <rect x={418} y={238} width={190} height={18} rx={5} fill="#f8fafb" />
+      <text x={513} y={251} textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#e65100">
         cash caps ad spend
       </text>
 
-      <line x1="430" y1="262" x2="430" y2="288" stroke="#a8a29e" strokeWidth="1.5" markerEnd="url(#arrow)" />
+      <line x1="430" y1="262" x2="430" y2="288" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
 
-      {/* Tally */}
+      {/* Carter */}
       <rect x={260} y={290} width={340} height={48} rx={14} fill="url(#aiGrad)" />
       <text x={430} y={311} textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#ffffff">
-        Tally
+        Carter
       </text>
-      <text x={430} y={328} textAnchor="middle" fontSize="10.5" fill="#ffedd5">
+      <text x={430} y={328} textAnchor="middle" fontSize="10.5" fill="#fff3e0">
         Reasons across all four — cites every number, never guesses
       </text>
 
-      <line x1="430" y1="338" x2="430" y2="352" stroke="#a8a29e" strokeWidth="1.5" markerEnd="url(#arrow)" />
+      <line x1="430" y1="338" x2="430" y2="352" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
 
       {/* Answer */}
-      <rect x={180} y={355} width={500} height={22} rx={11} fill="#dcfce7" stroke="#16a34a" strokeWidth="1.3" />
-      <text x={430} y={370} textAnchor="middle" fontSize="12" fontWeight="700" fill="#14532d">
+      <rect x={180} y={355} width={500} height={22} rx={11} fill="#e8f5e9" stroke="#2e7d32" strokeWidth="1.3" />
+      <text x={430} y={370} textAnchor="middle" fontSize="12" fontWeight="700" fill="#1b5e20">
         One clear, executable, cited answer
       </text>
     </svg>
@@ -256,7 +256,7 @@ function ProblemSolutionSlide() {
 /* Slide 3 — Product + Market                                             */
 /* ---------------------------------------------------------------------- */
 
-// Plain-English value — what Tally actually tells a founder, one line per
+// Plain-English value — what Carter actually tells a founder, one line per
 // connected pillar (includes the website / conversion read).
 const ANSWERS = [
   { icon: Package, q: "Which products actually make money?" },
@@ -269,13 +269,13 @@ const ANSWERS = [
 function MarketFunnel() {
   return (
     <svg viewBox="0 0 860 160" width="100%" role="img" aria-label="Who it's for: every Shopify brand doing 500 thousand to 10 million a year, narrowing to those who can't see their true per-product profit">
-      <rect x="20" y="10" width="820" height="130" rx="14" fill="#ffedd5" stroke="#ea580c" strokeWidth="1.3" />
-      <rect x="150" y="45" width="560" height="90" rx="14" fill="#fef3c7" stroke="#f59e0b" strokeWidth="1.3" />
-      <rect x="280" y="75" width="300" height="50" rx="14" fill="#fecaca" stroke="#ef4444" strokeWidth="1.3" />
-      <text x="430" y="30" textAnchor="middle" fontSize="13" fontWeight="700" fill="#9a3412">Every Shopify brand doing $500K–$10M a year</text>
-      <text x="430" y="48" textAnchor="middle" fontSize="10.5" fill="#9a3412">a $2B+ market</text>
-      <text x="430" y="70" textAnchor="middle" fontSize="12" fontWeight="700" fill="#78350f">…that already pay for an analytics or profit tool</text>
-      <text x="430" y="103" textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#7f1d1d">…and still can't see their true profit — we start here</text>
+      <rect x="20" y="10" width="820" height="130" rx="14" fill="#fff3e0" stroke="#ef6c00" strokeWidth="1.3" />
+      <rect x="150" y="45" width="560" height="90" rx="14" fill="#fff3e0" stroke="#ef6c00" strokeWidth="1.3" />
+      <rect x="280" y="75" width="300" height="50" rx="14" fill="#ffcdd2" stroke="#d32f2f" strokeWidth="1.3" />
+      <text x="430" y="30" textAnchor="middle" fontSize="13" fontWeight="700" fill="#1a2c8f">Every Shopify brand doing $500K–$10M a year</text>
+      <text x="430" y="48" textAnchor="middle" fontSize="10.5" fill="#1a2c8f">a $2B+ market</text>
+      <text x="430" y="70" textAnchor="middle" fontSize="12" fontWeight="700" fill="#e65100">…that already pay for an analytics or profit tool</text>
+      <text x="430" y="103" textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#c62828">…and still can't see their true profit — we start here</text>
     </svg>
   );
 }
@@ -294,13 +294,13 @@ function ProductMarketSlide() {
         Every money question, answered in one place.
       </h2>
       <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        Connect your store and ad accounts — Tally turns the numbers into plain answers you can act on. The core is live today.
+        Connect your store and ad accounts — Carter turns the numbers into plain answers you can act on. The core is live today.
       </p>
 
       <div className="mt-3 grid gap-2 sm:grid-cols-2">
         {ANSWERS.map((a) => (
-          <div key={a.q} className="flex items-center gap-2.5 rounded-xl border border-border bg-card px-3 py-2 shadow-sm">
-            <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-primary/[0.08] text-primary">
+          <div key={a.q} className="flex items-center gap-2.5 rounded-card shadow-ring bg-card px-3 py-2">
+            <span className="grid size-7 shrink-0 place-items-center rounded-input bg-primary/[0.08] text-primary">
               <a.icon className="size-4" />
             </span>
             <span className="text-sm font-medium text-foreground/90">{a.q}</span>
@@ -308,14 +308,14 @@ function ProductMarketSlide() {
         ))}
         <Link
           href="/insights"
-          className="flex items-center justify-center gap-1 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+          className="flex items-center justify-center gap-1 rounded-card bg-[image:var(--gradient-primary-button)] px-3 py-2 text-sm font-semibold text-white shadow-card transition-opacity hover:opacity-90"
         >
           Enter the live product <ArrowRight className="size-4" />
         </Link>
       </div>
 
-      <p className="mt-3 rounded-lg border border-border bg-black/[0.02] px-3 py-2 text-xs text-foreground/80">
-        <span className="font-semibold text-primary">Website example:</span> in the demo store only <span className="font-semibold">3.6%</span> of visitors buy — Tally shows which products lose the most shoppers between view → cart → checkout.
+      <p className="mt-3 rounded-input shadow-ring bg-ia-gray-faded px-3 py-2 text-xs text-foreground/80">
+        <span className="font-semibold text-primary">Website example:</span> in the demo store only <span className="font-semibold">3.6%</span> of visitors buy — Carter shows which products lose the most shoppers between view → cart → checkout.
       </p>
 
       <div className="mt-3">
@@ -324,7 +324,7 @@ function ProductMarketSlide() {
 
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {PRICING.map((p, i) => (
-          <div key={p.tier} className={cn("rounded-xl border px-4 py-3 shadow-sm", i === 1 ? "border-primary/40 bg-primary/[0.05]" : "border-border bg-card")}>
+          <div key={p.tier} className={cn("rounded-card border px-4 py-3 shadow-card", i === 1 ? "border-primary/40 bg-primary/[0.05]" : "border-border bg-card")}>
             <div className="flex items-baseline justify-between">
               <span className="text-sm font-semibold">{p.tier}</span>
               <span className="tabular text-base font-semibold text-primary">{p.price}</span>
@@ -346,13 +346,13 @@ function ProductMarketSlide() {
 /* ---------------------------------------------------------------------- */
 
 const CAP_ROWS = [
-  { cap: "True profit for every product", tally: "full", tw: "partial", sh: "full", nb: "none" },
-  { cap: "Ad results by profit, not just revenue", tally: "full", tw: "none", sh: "partial", nb: "none" },
-  { cap: "Where the website loses shoppers", tally: "full", tw: "partial", sh: "none", nb: "none" },
-  { cap: "Advice that knows your stock & cash", tally: "full", tw: "none", sh: "none", nb: "none" },
-  { cap: "Predicts your cash ahead of time", tally: "full", tw: "none", sh: "none", nb: "none" },
-  { cap: "One AI that reads all of it together", tally: "full", tw: "partial", sh: "none", nb: "none" },
-  { cap: "Detailed ad attribution", tally: "partial", tw: "full", sh: "partial", nb: "full" },
+  { cap: "True profit for every product", carter: "full", tw: "partial", sh: "full", nb: "none" },
+  { cap: "Ad results by profit, not just revenue", carter: "full", tw: "none", sh: "partial", nb: "none" },
+  { cap: "Where the website loses shoppers", carter: "full", tw: "partial", sh: "none", nb: "none" },
+  { cap: "Advice that knows your stock & cash", carter: "full", tw: "none", sh: "none", nb: "none" },
+  { cap: "Predicts your cash ahead of time", carter: "full", tw: "none", sh: "none", nb: "none" },
+  { cap: "One AI that reads all of it together", carter: "full", tw: "partial", sh: "none", nb: "none" },
+  { cap: "Detailed ad attribution", carter: "partial", tw: "full", sh: "partial", nb: "full" },
 ];
 
 const CAP_ICON = {
@@ -385,12 +385,12 @@ function MoatRoadmapSlide() {
         Each rival only sees one piece. To copy us, they'd have to rebuild everything from the ground up.
       </p>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+      <div className="mt-4 overflow-hidden rounded-card shadow-ring bg-card">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border bg-black/[0.015]">
+            <tr className="border-b border-border bg-ia-gray-faded">
               <th className="p-2.5 text-left text-[11px] font-semibold text-muted-foreground">Capability</th>
-              <th className="p-2.5 text-[11px] font-semibold text-primary">Tally</th>
+              <th className="p-2.5 text-[11px] font-semibold text-primary">Carter</th>
               <th className="p-2.5 text-[11px] font-semibold text-muted-foreground">Triple Whale</th>
               <th className="p-2.5 text-[11px] font-semibold text-muted-foreground">StoreHero</th>
               <th className="p-2.5 text-[11px] font-semibold text-muted-foreground">Northbeam</th>
@@ -400,7 +400,7 @@ function MoatRoadmapSlide() {
             {CAP_ROWS.map((r) => (
               <tr key={r.cap} className="border-b border-border last:border-0">
                 <td className="p-2.5 text-xs text-foreground/80">{r.cap}</td>
-                <td className="p-2.5 text-center"><CapabilityCell v={r.tally} /></td>
+                <td className="p-2.5 text-center"><CapabilityCell v={r.carter} /></td>
                 <td className="p-2.5 text-center"><CapabilityCell v={r.tw} /></td>
                 <td className="p-2.5 text-center"><CapabilityCell v={r.sh} /></td>
                 <td className="p-2.5 text-center"><CapabilityCell v={r.nb} /></td>
@@ -411,12 +411,12 @@ function MoatRoadmapSlide() {
       </div>
 
       <p className="mt-4 text-sm text-foreground/80">
-        Only Tally closes the loop across margin, ads, website, supply, and cash — at a fraction of the price.
+        Only Carter closes the loop across margin, ads, website, supply, and cash — at a fraction of the price.
       </p>
 
       <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
         {STATS.map((s) => (
-          <div key={s.label} className="rounded-xl border border-border bg-card px-4 py-2.5 text-left shadow-sm">
+          <div key={s.label} className="rounded-card shadow-ring bg-card px-4 py-2.5 text-left">
             <div className="tabular text-lg font-semibold text-foreground">{s.value}</div>
             <div className="text-[11px] text-muted-foreground">{s.label}</div>
           </div>
@@ -447,9 +447,9 @@ const WHY_NOW = [
 ];
 
 const MARKET_TIERS = [
-  { label: "TAM", value: "$2B+", w: 100, tint: "#ffedd5", stroke: "#ea580c", text: "#9a3412", desc: "Every Shopify brand doing $500K–$10M a year" },
-  { label: "SAM", value: "~$600M", w: 66, tint: "#fef3c7", stroke: "#f59e0b", text: "#78350f", desc: "Already pay for a profit / analytics tool" },
-  { label: "SOM", value: "~$120M", w: 34, tint: "#fee2e2", stroke: "#ef4444", text: "#7f1d1d", desc: "Our 3-yr wedge: margin-blind SKU sellers" },
+  { label: "TAM", value: "$2B+", w: 100, tint: "#fff3e0", stroke: "#ef6c00", text: "#1a2c8f", desc: "Every Shopify brand doing $500K–$10M a year" },
+  { label: "SAM", value: "~$600M", w: 66, tint: "#fff3e0", stroke: "#ef6c00", text: "#e65100", desc: "Already pay for a profit / analytics tool" },
+  { label: "SOM", value: "~$120M", w: 34, tint: "#ffe6e6", stroke: "#d32f2f", text: "#c62828", desc: "Our 3-yr wedge: margin-blind SKU sellers" },
 ];
 
 function MarketOpportunitySlide() {
@@ -464,9 +464,9 @@ function MarketOpportunitySlide() {
       <div className="mt-4 grid gap-4 lg:grid-cols-[1.05fr_1fr] lg:items-center">
         <div className="grid gap-2.5 sm:grid-cols-2">
           {WHY_NOW.map((w) => (
-            <div key={w.title} className="rounded-xl border border-border bg-card p-3 shadow-sm">
+            <div key={w.title} className="rounded-card shadow-ring bg-card p-3">
               <div className="flex items-center gap-2">
-                <span className="grid size-7 place-items-center rounded-lg bg-primary/[0.08] text-primary"><w.icon className="size-4" /></span>
+                <span className="grid size-7 place-items-center rounded-input bg-primary/[0.08] text-primary"><w.icon className="size-4" /></span>
                 <span className="text-sm font-semibold">{w.title}</span>
               </div>
               <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{w.body}</p>
@@ -474,12 +474,12 @@ function MarketOpportunitySlide() {
           ))}
         </div>
 
-        <div className="space-y-2.5 rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <div className="space-y-2.5 rounded-card shadow-ring bg-card p-4">
           <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Market sizing</div>
           {MARKET_TIERS.map((t) => (
             <div key={t.label}>
               <div className="text-xs font-semibold" style={{ color: t.text }}>{t.label} · <span className="tabular">{t.value}</span></div>
-              <div className="mt-1 rounded-lg border px-3 py-2" style={{ width: `${t.w}%`, background: t.tint, borderColor: t.stroke }}>
+              <div className="mt-1 rounded-input border px-3 py-2" style={{ width: `${t.w}%`, background: t.tint, borderColor: t.stroke }}>
                 <span className="text-[11px] font-medium" style={{ color: t.text }}>{t.desc}</span>
               </div>
             </div>
@@ -519,7 +519,7 @@ function BusinessModelSlide() {
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         {BM_TIERS.map((t) => (
-          <div key={t.tier} className={cn("rounded-xl border p-4 shadow-sm", t.featured ? "border-primary/40 bg-primary/[0.05]" : "border-border bg-card")}>
+          <div key={t.tier} className={cn("rounded-card border p-4 shadow-card", t.featured ? "border-primary/40 bg-primary/[0.05]" : "border-border bg-card")}>
             <div className="flex items-baseline justify-between">
               <span className="text-sm font-semibold">{t.tier}</span>
               <span className="tabular text-lg font-semibold text-primary">{t.price}<span className="text-xs font-normal text-muted-foreground">/mo</span></span>
@@ -537,7 +537,7 @@ function BusinessModelSlide() {
       <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Target unit economics</p>
       <div className="mt-2 grid gap-3 sm:grid-cols-4">
         {UNIT_ECON.map((m) => (
-          <div key={m.label} className="rounded-xl border border-border bg-card p-3 shadow-sm">
+          <div key={m.label} className="rounded-card shadow-ring bg-card p-3">
             <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><m.icon className="size-3.5 text-primary" /> {m.label}</div>
             <div className="tabular mt-1 text-xl font-semibold">{m.value}</div>
             <div className="mt-0.5 text-[10px] leading-tight text-muted-foreground">{m.sub}</div>
@@ -573,12 +573,12 @@ function GoToMarketSlide() {
 
       {/* land → expand motion */}
       <div className="mt-3 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-        <div className="flex-1 rounded-xl border border-primary/30 bg-primary/[0.05] px-4 py-3">
+        <div className="flex-1 rounded-card border border-primary/30 bg-primary/[0.05] px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-wide text-primary">Land</div>
           <div className="mt-0.5 text-sm text-foreground/90">The 10-minute reveal — "your bestseller loses money." Instant, undeniable value.</div>
         </div>
         <ArrowRight className="mx-auto size-5 shrink-0 rotate-90 text-muted-foreground sm:rotate-0" />
-        <div className="flex-1 rounded-xl border border-success/30 bg-success/[0.05] px-4 py-3">
+        <div className="flex-1 rounded-card border border-success/30 bg-success/[0.05] px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-wide text-success">Expand</div>
           <div className="mt-0.5 text-sm text-foreground/90">Core → Growth → Operate as GMV grows. Accounts expand themselves — NRR ≥ 110%.</div>
         </div>
@@ -586,9 +586,9 @@ function GoToMarketSlide() {
 
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
         {GTM_CHANNELS.map((c) => (
-          <div key={c.title} className="rounded-xl border border-border bg-card p-3.5 shadow-sm">
+          <div key={c.title} className="rounded-card shadow-ring bg-card p-3.5">
             <div className="flex items-center gap-2">
-              <span className="grid size-7 place-items-center rounded-lg bg-primary/[0.08] text-primary"><c.icon className="size-4" /></span>
+              <span className="grid size-7 place-items-center rounded-input bg-primary/[0.08] text-primary"><c.icon className="size-4" /></span>
               <span className="text-sm font-semibold">{c.title}</span>
             </div>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{c.body}</p>
@@ -598,7 +598,7 @@ function GoToMarketSlide() {
 
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {ACTIVATION.map((a) => (
-          <div key={a.label} className="rounded-xl border border-border bg-card px-4 py-2.5 shadow-sm">
+          <div key={a.label} className="rounded-card shadow-ring bg-card px-4 py-2.5">
             <div className="tabular text-lg font-semibold text-foreground">{a.value}</div>
             <div className="text-[11px] leading-tight text-muted-foreground">{a.label}</div>
           </div>
@@ -609,7 +609,7 @@ function GoToMarketSlide() {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 8 — Before vs after Tally (the world we create)                  */
+/* Slide 8 — Before vs after Carter (the world we create)                  */
 /* ---------------------------------------------------------------------- */
 
 const BEFORE = [
@@ -631,18 +631,18 @@ const AFTER = [
 function BeforeAfterSlide() {
   return (
     <div className="flex h-full flex-col justify-center">
-      <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">The world with Tally</p>
+      <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">The world with Carter</p>
       <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
-        Before Tally, brands guess. <span className="text-primary">After Tally, they know.</span>
+        Before Carter, brands guess. <span className="text-primary">After Carter, they know.</span>
       </h2>
       <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
         This isn't a nicer dashboard — it's a new operating standard for how a Shopify brand is run.
       </p>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
-        <div className="rounded-2xl border border-destructive/25 bg-destructive/[0.03] p-4">
+        <div className="rounded-card border border-destructive/25 bg-destructive/[0.03] p-4">
           <div className="mb-2 flex items-center gap-2">
-            <span className="grid size-7 place-items-center rounded-lg bg-destructive/10 text-destructive"><EyeOff className="size-4" /></span>
+            <span className="grid size-7 place-items-center rounded-input bg-destructive/10 text-destructive"><EyeOff className="size-4" /></span>
             <span className="text-sm font-semibold text-destructive">Today — flying blind</span>
           </div>
           <ul className="space-y-1.5">
@@ -651,10 +651,10 @@ function BeforeAfterSlide() {
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-success/30 bg-success/[0.04] p-4">
+        <div className="rounded-card border border-success/30 bg-success/[0.04] p-4">
           <div className="mb-2 flex items-center gap-2">
-            <span className="grid size-7 place-items-center rounded-lg bg-success/10 text-success"><CheckCircle2 className="size-4" /></span>
-            <span className="text-sm font-semibold text-success">With Tally — in control</span>
+            <span className="grid size-7 place-items-center rounded-input bg-success/10 text-success"><CheckCircle2 className="size-4" /></span>
+            <span className="text-sm font-semibold text-success">With Carter — in control</span>
           </div>
           <ul className="space-y-1.5">
             {AFTER.map((a) => (
@@ -664,9 +664,9 @@ function BeforeAfterSlide() {
         </div>
       </div>
 
-      <div className="mt-4 rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-transparent p-4">
+      <div className="mt-4 rounded-card border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-transparent p-4">
         <div className="flex items-start gap-3">
-          <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-amber-400 to-orange-600 text-white"><TrendingUp className="size-4" /></span>
+          <span className="grid size-8 shrink-0 place-items-center rounded-input bg-[image:var(--gradient-primary-button)] text-white"><TrendingUp className="size-4" /></span>
           <div>
             <p className="text-sm font-medium text-foreground/90">
               Brands stop bleeding hidden losses and start compounding profit — so they grow, stay, and spend more with us as they scale (<span className="font-semibold">NRR ≥ 110%</span>). That's the flywheel.
@@ -715,7 +715,7 @@ export default function PresentationPage() {
       {/* progress bar */}
       <div className="h-1 w-full bg-border">
         <div
-          className="h-full bg-gradient-to-r from-amber-400 to-orange-600 transition-all duration-300"
+          className="h-full bg-[image:var(--gradient-primary-button)] transition-all duration-300"
           style={{ width: `${((index + 1) / SLIDES.length) * 100}%` }}
         />
       </div>
@@ -731,7 +731,7 @@ export default function PresentationPage() {
         <button
           onClick={() => go(-1)}
           disabled={index === 0}
-          className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-black/[0.04] hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+          className="inline-flex items-center gap-1 rounded-input px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-ia-gray hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
         >
           <ChevronLeft className="size-4" /> Prev
         </button>
@@ -756,7 +756,7 @@ export default function PresentationPage() {
         <button
           onClick={() => go(1)}
           disabled={index === SLIDES.length - 1}
-          className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-black/[0.04] hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+          className="inline-flex items-center gap-1 rounded-input px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-ia-gray hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
         >
           Next <ChevronRight className="size-4" />
         </button>

@@ -194,7 +194,7 @@ export default function DashboardPage() {
               const n = data.projection.next;
               const d = signed(n.cm3DeltaPct);
               return (
-                <p className="mt-4 rounded-lg border border-border bg-black/[0.02] px-4 py-3 text-sm text-foreground/90">
+                <p className="mt-4 rounded-input shadow-ring bg-ia-gray-faded px-4 py-3 text-sm text-foreground/90">
                   On the current trend, <span className="font-semibold">{n.label}</span> lands around{" "}
                   <span className="font-semibold text-success">{money(n.cm3)}</span> net profit (CM3) on{" "}
                   <span className="font-semibold">{money(n.revenue)}</span> revenue — about {pct(n.marginPct)} margin,{" "}
@@ -221,7 +221,7 @@ export default function DashboardPage() {
             <div className="divide-y divide-border">
               {orders.map((o) => (
                 <div key={o.id} className="flex items-center gap-3 py-2.5">
-                  <span className="size-2 shrink-0 rounded-full" style={{ background: CHANNEL_TONE[o.channel] || "#a8a29e" }} />
+                  <span className="size-2 shrink-0 rounded-full" style={{ background: CHANNEL_TONE[o.channel] || "#a3b3bc" }} />
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium">{o.product}</div>
                     <div className="text-[11px] text-muted-foreground">{o.channel} · {o.customer} · {o.time}</div>

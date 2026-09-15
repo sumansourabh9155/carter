@@ -7,7 +7,7 @@ export default function AppError({ error, reset }) {
   return (
     <div className="grid min-h-[60vh] place-items-center px-6">
       <div className="max-w-md text-center">
-        <span className="mx-auto mb-4 grid size-12 place-items-center rounded-2xl bg-destructive/10 text-destructive">
+        <span className="mx-auto mb-4 grid size-12 place-items-center rounded-card bg-destructive/10 text-destructive">
           <TriangleAlert className="size-6" />
         </span>
         <h2 className="text-lg font-semibold">Something went wrong</h2>

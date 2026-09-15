@@ -1,5 +1,5 @@
 // Lightweight inline-SVG sparkline (no Recharts — keeps KPI cards cheap).
-export function Sparkline({ data = [], width = 96, height = 28, color = "#eb6834" }) {
+export function Sparkline({ data = [], width = 96, height = 28, color = "#2238b0" }) {
   if (!data.length) return null;
   const min = Math.min(...data, 0);
   const max = Math.max(...data, 0);

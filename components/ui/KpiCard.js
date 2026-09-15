@@ -20,7 +20,7 @@ export function KpiCard({ label, value, unit = "money", sub, delta, verdict = fa
   return (
     <Card
       className={cn(
-        "p-4 transition-colors hover:border-black/15",
+        "p-4 transition-colors hover:border-border",
         verdictTone === "pos" && "border-success/30 bg-success/[0.04]",
         verdictTone === "neg" && "border-destructive/30 bg-destructive/[0.04]"
       )}
@@ -35,7 +35,7 @@ export function KpiCard({ label, value, unit = "money", sub, delta, verdict = fa
         <span className={cn("tabular text-2xl font-semibold tracking-tight", negativeValue && "text-destructive")}>
           {fmt(value, unit)}
         </span>
-        {spark && <Sparkline data={spark} color={verdictTone === "neg" ? "#ef4444" : "#eb6834"} />}
+        {spark && <Sparkline data={spark} color={verdictTone === "neg" ? "#d32f2f" : "#2238b0"} />}
       </div>
 
       <div className="mt-2 flex items-center gap-2">

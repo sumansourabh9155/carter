@@ -6,11 +6,11 @@ import { GRID_PROPS, AXIS_PROPS, YAXIS_MULT, ChartTooltip, CHART_COLORS } from "
 // Channel identity colors — MUST match lib/data/adChannels.js exactly, so a
 // channel wears the same hue on every surface (color follows the entity).
 const SERIES = [
-  { key: "meta", name: "Meta", color: "#2a78d6" },
-  { key: "google", name: "Google", color: "#eda100" },
-  { key: "tiktok", name: "TikTok", color: "#e87ba4" },
-  { key: "snapchat", name: "Snapchat", color: "#eb6834" },
-  { key: "twitter", name: "X", color: "#111827" },
+  { key: "meta", name: "Meta", color: "#0277bd" },
+  { key: "google", name: "Google", color: "#ef6c00" },
+  { key: "tiktok", name: "TikTok", color: "#7b1fa2" },
+  { key: "snapchat", name: "Snapchat", color: "#2238b0" },
+  { key: "twitter", name: "X", color: "#1a2027" },
 ];
 
 export function CmRoasTrend({ data, height = 220 }) {
@@ -24,8 +24,8 @@ export function CmRoasTrend({ data, height = 220 }) {
           <Tooltip content={<ChartTooltip multKeys={["meta", "google", "tiktok", "snapchat", "twitter"]} />} />
           <Legend
             iconType="plainline"
-            wrapperStyle={{ fontSize: 11, color: "#64748b" }}
-            formatter={(v) => <span style={{ color: "#94a3b8" }}>{v}</span>}
+            wrapperStyle={{ fontSize: 11, color: "#7d929e" }}
+            formatter={(v) => <span style={{ color: "#a3b3bc" }}>{v}</span>}
           />
           {SERIES.map((s) => (
             <Line key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} strokeWidth={2} dot={false} />

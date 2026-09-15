@@ -22,13 +22,13 @@ export function RankBars({ items, breakeven = 1, showBreakeven = true, format = 
                 {fmt(it.value)}
               </span>
             </div>
-            <div className="relative h-2.5 overflow-hidden rounded-full bg-black/[0.05]">
+            <div className="relative h-2.5 overflow-hidden rounded-full bg-ia-gray">
               <div
                 className="h-full rounded-full"
-                style={{ width: `${(it.value / max) * 100}%`, background: it.color || (below ? "#ef4444" : "#1baf7a") }}
+                style={{ width: `${(it.value / max) * 100}%`, background: it.color || (below ? "#d32f2f" : "#2e7d32") }}
               />
               {showBreakeven && (
-                <div className="absolute inset-y-0 w-px bg-black/30" style={{ left: `${(breakeven / max) * 100}%` }} />
+                <div className="absolute inset-y-0 w-px bg-neutral-900/30" style={{ left: `${(breakeven / max) * 100}%` }} />
               )}
             </div>
             {it.sub && <div className="mt-1 text-[11px] text-muted-foreground">{it.sub}</div>}
@@ -37,7 +37,7 @@ export function RankBars({ items, breakeven = 1, showBreakeven = true, format = 
       })}
       {showBreakeven && (
         <div className="flex items-center gap-1.5 pt-1 text-[10px] text-muted-foreground">
-          <span className="inline-block h-2.5 w-px bg-black/30" /> break-even ({multiple(breakeven)} CM-ROAS)
+          <span className="inline-block h-2.5 w-px bg-neutral-900/30" /> break-even ({multiple(breakeven)} CM-ROAS)
         </div>
       )}
     </div>

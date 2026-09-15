@@ -4,7 +4,7 @@
 
 // Funnel stages are ORDERED, so they wear ONE hue stepped light→dark (an
 // ordinal ramp) rather than four unrelated hues — depth = progress to purchase.
-const STAGE_COLORS = ["#86b6ef", "#5598e7", "#2a78d6", "#1c5cab"];
+const STAGE_COLORS = ["#6a85e6", "#3b5bdb", "#0277bd", "#2238b0"];
 
 export function FunnelSteps({ steps }) {
   if (!steps?.length) return null;
@@ -30,7 +30,7 @@ export function FunnelSteps({ steps }) {
                 </span>
               </span>
             </div>
-            <div className="h-3.5 overflow-hidden rounded-full bg-black/[0.04]">
+            <div className="h-3.5 overflow-hidden rounded-full bg-ia-gray">
               <div
                 className="h-full rounded-full"
                 style={{ width: `${widthPct}%`, background: STAGE_COLORS[i % STAGE_COLORS.length] }}

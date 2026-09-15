@@ -29,7 +29,7 @@ const SEV_ACCENT = {
 // --- Health strip: instant read on the state of the business ---
 function Tile({ label, value, sub, tone }) {
   return (
-    <div className={cn("rounded-xl border border-border bg-card p-3.5", tone === "pos" && "border-success/30 bg-success/[0.04]", tone === "neg" && "border-destructive/30 bg-destructive/[0.04]", tone === "warn" && "border-warning/30 bg-warning/[0.04]")}>
+    <div className={cn("rounded-card shadow-ring bg-card p-3.5", tone === "pos" && "border-success/30 bg-success/[0.04]", tone === "neg" && "border-destructive/30 bg-destructive/[0.04]", tone === "warn" && "border-warning/30 bg-warning/[0.04]")}>
       <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
       <div className="tabular mt-1 text-xl font-semibold tracking-tight">{value}</div>
       {sub && <div className="mt-0.5 text-[11px] text-muted-foreground">{sub}</div>}
@@ -60,7 +60,7 @@ function HealthStrip({ board }) {
 // and links to the deep screen that proves it.
 function ActionCard({ a }) {
   return (
-    <div className={cn("flex flex-col rounded-xl border border-border bg-card p-3.5 transition-colors", SEV_ACCENT[a.severity])}>
+    <div className={cn("flex flex-col rounded-card shadow-ring bg-card p-3.5 transition-colors", SEV_ACCENT[a.severity])}>
       <div className="flex items-center justify-between gap-2">
         <Badge variant={SEV_VARIANT[a.severity]}>{a.verdict}</Badge>
         {a.metric && <span className="tabular text-xs font-semibold text-muted-foreground">{a.metric}</span>}
@@ -95,10 +95,10 @@ function CreateAlertDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create an alert</DialogTitle>
-          <DialogDescription>Tally watches your numbers and pings you when a threshold trips.</DialogDescription>
+          <DialogDescription>Carter watches your numbers and pings you when a threshold trips.</DialogDescription>
         </DialogHeader>
         {saved ? (
-          <div className="flex items-center gap-3 rounded-lg border border-success/30 bg-success/[0.06] p-4 text-sm">
+          <div className="flex items-center gap-3 rounded-input border border-success/30 bg-success/[0.06] p-4 text-sm">
             <Check className="size-4 text-success" /> Alert created. You'll be notified in-app and by email.
           </div>
         ) : (
@@ -108,8 +108,8 @@ function CreateAlertDialog() {
                 key={t.id}
                 onClick={() => setType(t.id)}
                 className={cn(
-                  "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors",
-                  type === t.id ? "border-primary/40 bg-primary/[0.06]" : "border-border hover:bg-black/[0.03]"
+                  "flex w-full items-start gap-3 rounded-input border p-3 text-left transition-colors",
+                  type === t.id ? "border-primary/40 bg-primary/[0.06]" : "border-border hover:bg-ia-gray-faded"
                 )}
               >
                 <span className={cn("mt-0.5 size-3.5 rounded-full border-2", type === t.id ? "border-primary bg-primary" : "border-muted-foreground")} />
@@ -138,7 +138,7 @@ function AlertsCard() {
     <Card className="flex h-full flex-col p-4">
       <div className="mb-3 flex items-center justify-between">
         <span className="inline-flex items-center gap-2 text-sm font-semibold">
-          <span className="grid size-7 place-items-center rounded-lg bg-warning/15 text-warning"><Bell className="size-3.5" /></span>
+          <span className="grid size-7 place-items-center rounded-input bg-warning/15 text-warning"><Bell className="size-3.5" /></span>
           Alerts you've set
         </span>
         <CreateAlertDialog />
@@ -148,7 +148,7 @@ function AlertsCard() {
       ) : (
         <div className="space-y-2">
           {alerts.map((a) => (
-            <div key={a.id} className="rounded-lg border border-border p-3">
+            <div key={a.id} className="rounded-input shadow-ring p-3">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">{a.title}</span>
                 <Badge variant={a.severity === "critical" ? "destructive" : "warning"}>{a.severity}</Badge>
@@ -170,7 +170,7 @@ function CashCard() {
     <Card className="flex h-full flex-col p-4">
       <div className="mb-3">
         <span className="inline-flex items-center gap-2 text-sm font-semibold">
-          <span className="grid size-7 place-items-center rounded-lg bg-primary/15 text-primary"><Wallet className="size-3.5" /></span>
+          <span className="grid size-7 place-items-center rounded-input bg-primary/15 text-primary"><Wallet className="size-3.5" /></span>
           Cash calendar
         </span>
         <p className="mt-0.5 text-[11px] text-muted-foreground">What your current reorder needs commit you to — not a forecast.</p>
@@ -187,7 +187,7 @@ function CashCard() {
           </div>
           <div className="space-y-1.5 overflow-y-auto">
             {cal.items.slice(0, 5).map((i) => (
-              <Link key={i.id} href={`/products/${i.id}`} className="flex items-center gap-2.5 rounded-lg border border-border p-2 transition-colors hover:bg-black/[0.02]">
+              <Link key={i.id} href={`/products/${i.id}`} className="flex items-center gap-2.5 rounded-input shadow-ring p-2 transition-colors hover:bg-ia-gray-faded">
                 <ProductThumb id={i.id} name={i.name} size={26} />
                 <span className="min-w-0 flex-1 truncate text-xs font-medium">{i.name}</span>
                 {i.urgent && <Badge variant="destructive">Urgent</Badge>}
@@ -210,7 +210,7 @@ function AuraDailyBrief() {
   const { data: brief } = useAsync(() => getDailyBrief(), []);
   const { openPanel } = useAIPanel();
 
-  if (!brief) return <Skeleton className="h-[188px] w-full rounded-2xl" />;
+  if (!brief) return <Skeleton className="h-[188px] w-full rounded-card" />;
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
@@ -218,7 +218,7 @@ function AuraDailyBrief() {
   return (
     <Card className="overflow-hidden border-primary/20 bg-gradient-to-br from-primary/[0.06] to-transparent p-5">
       <div className="flex items-start gap-3">
-        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 text-white shadow-sm">
+        <span className="grid size-9 shrink-0 place-items-center rounded-card bg-[image:var(--gradient-primary-button)] text-white shadow-card">
           <Sparkles className="size-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -241,7 +241,7 @@ function AuraDailyBrief() {
             <Link
               key={it.id}
               href={it.action?.href || "#"}
-              className="group flex flex-col gap-1.5 rounded-xl border border-border bg-card/70 p-3 transition-colors hover:border-primary/30"
+              className="group flex flex-col gap-1.5 rounded-card shadow-ring bg-card p-3 transition-colors hover:border-primary/30"
             >
               <div className="flex items-center gap-1.5">
                 <span className="text-[10px] font-semibold text-muted-foreground">{i + 1}</span>

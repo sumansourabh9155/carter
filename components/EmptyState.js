@@ -7,7 +7,7 @@ export function EmptyState({ icon: Icon, title, body, cta, badge }) {
     <div className="grid min-h-[60vh] place-items-center px-6">
       <div className="max-w-md text-center">
         {Icon && (
-          <span className="mx-auto mb-5 grid size-14 place-items-center rounded-2xl border border-border bg-card text-muted-foreground">
+          <span className="mx-auto mb-5 grid size-14 place-items-center rounded-card shadow-ring bg-card text-muted-foreground">
             <Icon className="size-6" />
           </span>
         )}

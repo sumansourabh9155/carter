@@ -20,7 +20,7 @@ function FieldInput({ field, value, onChange }) {
       <select
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value || null)}
-        className={cn(base, "w-full rounded-md border border-input bg-transparent px-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50")}
+        className={cn(base, "w-full rounded-button border border-input bg-transparent px-2 text-sm text-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50")}
       >
         <option value="" className="bg-card">— select —</option>
         {field.options.map((o) => (
@@ -75,7 +75,7 @@ export function SkuDetailSheet({ open, onOpenChange, sku, onSave }) {
       <SheetContent className="overflow-y-auto p-0">
         <SheetHeader>
           <div className="flex items-center gap-2.5">
-            <ProductThumb id={sku.id} name={sku.name} size={40} rounded="rounded-lg" />
+            <ProductThumb id={sku.id} name={sku.name} size={40} rounded="rounded-input" />
             <div>
               <SheetTitle>{sku.name}</SheetTitle>
               <SheetDescription>{sku.sku} · complete the data Shopify can't provide</SheetDescription>

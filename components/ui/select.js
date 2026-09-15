@@ -9,7 +9,7 @@ function Select({ className, ...props }) {
       <select
         data-slot="select"
         className={cn(
-          "h-9 cursor-pointer appearance-none rounded-md border border-input bg-transparent py-1 pl-3 pr-8 text-sm text-foreground transition-colors outline-none",
+          "h-9 cursor-pointer appearance-none rounded-button border border-input bg-transparent py-1 pl-3 pr-8 text-sm text-foreground transition-colors outline-none",
           "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
           "disabled:cursor-not-allowed disabled:opacity-50",
           className

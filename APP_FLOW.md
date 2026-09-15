@@ -1,7 +1,7 @@
-# Tally — Final App-Flow & Architecture Plan
+# Carter — Final App-Flow & Architecture Plan
 
 **Status:** Approved-for-build. This is the document development works from.
-**Build target:** new folder `tally-app/` — a standalone branded dark-theme web app for the Phase-1 wedge demo.
+**Build target:** new folder `carter-app/` — a standalone branded dark-theme web app for the Phase-1 wedge demo.
 **Stack (locked, mirrors prototype):** Next.js 16 (App Router) · React 19 · plain JavaScript (no TypeScript) · Recharts 3 · React inline styles · dark theme (`#0a0f1a` / `#060b12`, indigo `#4f46e5` / `#818cf8`).
 
 ---
@@ -76,7 +76,7 @@ Route group `(app)/` holds the authenticated shell. `(auth)/` and `onboarding/` 
 1. **Home** — `house`
 2. **Products** — `tag` · **badge: red dot if any negative-CM2 hero exists** (the one nav embellishment worth building — it visually foreshadows the reveal)
 3. **Marketing** — `megaphone`
-4. **Tally AI** — `sparkles` (opens the dock; noun label for parallel scanning, grouped under the divider as the AI entry)
+4. **Carter AI** — `sparkles` (opens the dock; noun label for parallel scanning, grouped under the divider as the AI entry)
 5. — divider —
 6. **Alerts** — `bell` · badge = unread count
 7. **Coming soon** group (greyed, below divider): Cash Flow, Inventory, Reports → each routes to its stub `EmptyState`
@@ -114,7 +114,7 @@ Login ──Connect Shopify──▶ (mock OAuth) ──▶ Onboarding wizard �
 
 **(c) App shell.** `(app)/layout.js` mounts the context providers (DateRange, Store, AIPanel) **above** the route segments so dock threads and date range survive client navigation (in-memory only — resets on full reload; we do not claim more).
 
-**(d) Daily core loop.** Maya opens `/home` → 10-second money verdict (CM3 card green/red) + top alert → taps the losing hero → `/products/[sku]` → asks Tally "why did margin drop?" in the dock → "Alert me." Devin/Priya drill `/products` or switch to `/marketing`.
+**(d) Daily core loop.** Maya opens `/home` → 10-second money verdict (CM3 card green/red) + top alert → taps the losing hero → `/products/[sku]` → asks Carter "why did margin drop?" in the dock → "Alert me." Devin/Priya drill `/products` or switch to `/marketing`.
 
 ---
 
@@ -128,13 +128,13 @@ Login ──Connect Shopify──▶ (mock OAuth) ──▶ Onboarding wizard �
 5. **Reveal** names that SKU + per-order loss + mini-waterfall + inline alert CTA. *Target: < 10 min, same session.*
 
 **B. Connected-decisions read: "should I scale this ad?"** (Phase 1 = read-only insight, honestly labeled)
-1. On `/marketing` or a SKU page, click "Ask Tally" on a row (pre-seeds a context chip: SKU + channel + range).
+1. On `/marketing` or a SKU page, click "Ask Carter" on a row (pre-seeds a context chip: SKU + channel + range).
 2. Dock reveals named steps via timed chunk-reveal: *Computing CM2… checking CM-ROAS…*
 3. Returns a structured card: current **CM-ROAS** (not revenue ROAS), the binding constraint, a verdict, each number with a **citation chip** → ledger rows, plus **confidence + freshness**.
 4. Follow-up chips: "See SKU detail" · "Set CM-erosion alert." Phase 1 stops at recommendation (labeled read-only).
 
-**C. Asking Tally AI** (single surface = dock)
-1. Header `sparkles` launcher, sidebar "Tally AI" item, or inline "Ask Tally" card affordance → **the same right dock, the same thread store.**
+**C. Asking Carter AI** (single surface = dock)
+1. Header `sparkles` launcher, sidebar "Carter AI" item, or inline "Ask Carter" card affordance → **the same right dock, the same thread store.**
 2. Empty state shows 3–5 context-aware starters ("Which bestsellers lose money?", "Why did margin drop last week?").
 3. Submit → instant thinking state → timed token reveal → structured metric card with **citation + freshness + confidence**; **STOP** (clearInterval) mid-gen, **Regenerate** (replay) after.
 4. If COGS incomplete → AI says "Estimated — add real COGS for N SKUs" with a one-click deep link to `/settings/cogs`.
@@ -158,7 +158,7 @@ Login ──Connect Shopify──▶ (mock OAuth) ──▶ Onboarding wizard �
 - `DataTable`: SKU · Revenue · CM1 · CM2 · CM3 · CM-ROAS, inline sparklines, conditional red for negative margin, **Estimated** badges with **inline COGS entry on an Estimated row** (don't force a settings trip for the product's most important data task). Filters (tier=hero/anchor), sort, search with visible applied-state chip + clear-all. Page-level tabs switch the CM1/CM2/CM3 lens. Row click → detail.
 
 **`/products/[sku]`**
-- Breadcrumb (Products / Performance Leggings). TitleBar actions: Recalculate, Export. SKU CM **waterfall**, units/returns/ad-spend cards, "view as table" toggle, plain-English takeaway line, inline "Ask Tally." `getProduct(sku)` returns null for bad ids → page calls `notFound()`.
+- Breadcrumb (Products / Performance Leggings). TitleBar actions: Recalculate, Export. SKU CM **waterfall**, units/returns/ad-spend cards, "view as table" toggle, plain-English takeaway line, inline "Ask Carter." `getProduct(sku)` returns null for bad ids → page calls `notFound()`.
 
 **`/marketing`**
 - KpiCards: blended **CM-ROAS** vs revenue-ROAS, ad spend, CM2-after-ads. Sorted-bar ranking of channels/campaigns by CM-ROAS; product-linked spend table. (No `[channel]` drill-down in demo.)
@@ -190,7 +190,7 @@ Sync health is **first-class** (PRD risk #8): a failed connector surfaces on the
 - **Sidebar** — nav items, icon-rail collapse, `usePathname` active state, Products red-dot badge.
 - **TopBar** — static brand label, date-preset selector, SyncStatus chip, NotificationsBell, AI launcher, AvatarMenu.
 - **KpiCard** — fixed anatomy (value, label, signed delta abs+%, sparkline, gap-to-target) + freshness/confidence slot. **Props-only, no data imports.**
-- **ChartCard** — title-as-question, "view as table" toggle, plain-English takeaway slot, "Ask Tally" affordance.
+- **ChartCard** — title-as-question, "view as table" toggle, plain-English takeaway slot, "Ask Carter" affordance.
 - **DataTable** — sortable, inline sparklines, conditional formatting, Estimated badges + inline COGS edit, row→detail. Props-only.
 - **DateRangePicker** — preset selector only (7/30/90); writes DateRangeContext + URL query; hidden on non-applicable routes.
 - **InsightCard** — alert/insight tile (severity icon + color + label).
@@ -205,9 +205,9 @@ Sync health is **first-class** (PRD risk #8): a failed connector surfaces on the
 
 ## 8. Data / state approach (mock now, facade-isolated)
 
-- **Single facade `lib/api/index.js`** — components import *only* from here. Functions are **async** returning promises: `getMetrics({range})`, `getProducts({range,sort})`, `getProduct(sku)` (returns null for bad id), `getMarketing()`, `getAlerts()`, `createAlert()`, `askTally(message, context)`.
+- **Single facade `lib/api/index.js`** — components import *only* from here. Functions are **async** returning promises: `getMetrics({range})`, `getProducts({range,sort})`, `getProduct(sku)` (returns null for bad id), `getMarketing()`, `getAlerts()`, `createAlert()`, `askCarter(message, context)`.
 - **The wedge integrity rule (non-negotiable):** mock impls in `lib/api/mock/*` read **raw-input** datasets in `lib/data/*` and run them through the **pure engine** `lib/compute/margin.js` (CM1 = Rev − COGS − shipping − fees − returns; CM2 = CM1 − ad spend; CM3 = CM2 − overheads). **Do NOT copy the pre-computed `cm1/cm2/cm3/cmRoas/quadrant` literals from `credes/lib/sampleData.js`** — those make the engine decorative. Seed SKUs carry only: `units, revenue|unitPrice, unitCogs|null, shipping, fees, returns, adSpend, overheadAlloc, hasCogs`. The engine derives everything and sets the **Estimated** flag when COGS is null/default.
-- **`askTally` = timed chunk-reveal**, not a true AsyncIterator. The facade signature stays stream-like; the implementation reveals a canned structured payload via `setInterval`, then renders the citation/confidence/freshness card. STOP = `clearInterval`, Regenerate = replay. Robust, no React-19 token-thrash, looks identical in a demo.
+- **`askCarter` = timed chunk-reveal**, not a true AsyncIterator. The facade signature stays stream-like; the implementation reveals a canned structured payload via `setInterval`, then renders the citation/confidence/freshness card. STOP = `clearInterval`, Regenerate = replay. Robust, no React-19 token-thrash, looks identical in a demo.
 - **Swap path (honest framing):** the facade boundary prevents *import churn* when real Shopify GraphQL arrives. It does **not** pre-solve pagination, rate limits, partial failure, or per-field freshness — that UI work comes with live data. **Do not build `lib/api/shopify/*` stubs now** (false API-readiness); add them in Phase 2 when wiring GraphQL.
 - **State:** React Context for DateRange, Store, AIPanel (mounted at `(app)/layout.js`). No external state lib for MVP. In-memory only.
 
@@ -226,7 +226,7 @@ Sync health is **first-class** (PRD risk #8): a failed connector surfaces on the
 ## 10. MVP build sequence (logical phases)
 
 **Phase 1 — wedge (build fully):**
-1. Scaffold `tally-app`; **run the stack spike** (below) before any architecture.
+1. Scaffold `carter-app`; **run the stack spike** (below) before any architecture.
 2. Port `chartTheme.js` + theme tokens; set up route groups + `(app)/layout.js` shell (Sidebar + TopBar + contexts).
 3. **`lib/data` raw-input seed + `lib/compute/margin.js` engine + `lib/api` mock facade** — built *before* screens.
 4. **Onboarding wizard → reveal** (the money shot).
@@ -246,104 +246,104 @@ Sync health is **first-class** (PRD risk #8): a failed connector surfaces on the
 
 **Step 0 — Stack spike (≈30 min, do before writing any architecture).** De-risk the two biggest unknowns: dependency resolution and Recharts-in-App-Router.
 ```
-tally-app/package.json            # next ^16.2.4, react ^19, recharts ^3.8.1 (mirror credes)
-tally-app/next.config.mjs
-tally-app/jsconfig.json
-tally-app/app/layout.js           # <html><body>, dark bg
-tally-app/app/globals.css         # reset + CSS vars
-tally-app/app/page.js             # redirect('/home') — verify next/navigation redirect works
-tally-app/app/spike/page.js       # 'use client' + ONE Recharts chart in ResponsiveContainer
+carter-app/package.json            # next ^16.2.4, react ^19, recharts ^3.8.1 (mirror credes)
+carter-app/next.config.mjs
+carter-app/jsconfig.json
+carter-app/app/layout.js           # <html><body>, dark bg
+carter-app/app/globals.css         # reset + CSS vars
+carter-app/app/page.js             # redirect('/home') — verify next/navigation redirect works
+carter-app/app/spike/page.js       # 'use client' + ONE Recharts chart in ResponsiveContainer
 ```
-Run `cd tally-app && npm install && npm run dev`. Confirm: deps resolve, the chart sizes correctly, StrictMode double-invoke doesn't break it, `redirect()` works. **Do not proceed until green.** Delete `app/spike/`.
+Run `cd carter-app && npm install && npm run dev`. Confirm: deps resolve, the chart sizes correctly, StrictMode double-invoke doesn't break it, `redirect()` works. **Do not proceed until green.** Delete `app/spike/`.
 
 **Step 1 — Theme + tokens (ports).**
 ```
-tally-app/lib/chartTheme.js       # PORT VERBATIM from credes/lib/chartTheme.js
-tally-app/lib/theme.js            # color/spacing/typography tokens
-tally-app/lib/format.js           # money / % / signed-delta formatters
+carter-app/lib/chartTheme.js       # PORT VERBATIM from credes/lib/chartTheme.js
+carter-app/lib/theme.js            # color/spacing/typography tokens
+carter-app/lib/format.js           # money / % / signed-delta formatters
 ```
 
 **Step 2 — Data engine + facade (build BEFORE any screen — the wedge integrity layer).**
 ```
-tally-app/lib/data/skus.js        # RAW INPUTS ONLY (units, revenue, unitCogs|null, shipping,
+carter-app/lib/data/skus.js        # RAW INPUTS ONLY (units, revenue, unitCogs|null, shipping,
                                     #   fees, returns, adSpend, overheadAlloc, hasCogs).
                                     #   DO NOT copy cm1/cm2/cm3 literals from credes/lib/sampleData.js
-tally-app/lib/data/adChannels.js  # raw spend + attributed revenue per channel (derive cmRoas)
-tally-app/lib/data/alertsSeed.js  # 2 live alert instances
-tally-app/lib/compute/margin.js   # PURE: deriveCM1/CM2/CM3, heroes/anchors, Estimated flag
-tally-app/lib/api/mock/products.js
-tally-app/lib/api/mock/marketing.js
-tally-app/lib/api/mock/metrics.js
-tally-app/lib/api/mock/alerts.js
-tally-app/lib/api/mock/ai.js      # canned structured payloads + citation rows
-tally-app/lib/api/index.js        # async facade — the ONLY data import surface
+carter-app/lib/data/adChannels.js  # raw spend + attributed revenue per channel (derive cmRoas)
+carter-app/lib/data/alertsSeed.js  # 2 live alert instances
+carter-app/lib/compute/margin.js   # PURE: deriveCM1/CM2/CM3, heroes/anchors, Estimated flag
+carter-app/lib/api/mock/products.js
+carter-app/lib/api/mock/marketing.js
+carter-app/lib/api/mock/metrics.js
+carter-app/lib/api/mock/alerts.js
+carter-app/lib/api/mock/ai.js      # canned structured payloads + citation rows
+carter-app/lib/api/index.js        # async facade — the ONLY data import surface
 ```
 
 **Step 3 — Vertical slice: prove the whole pipe on ONE route before fanning out.**
 ```
-tally-app/context/DateRangeContext.js
-tally-app/context/StoreContext.js
-tally-app/context/AIPanelContext.js
-tally-app/components/ui/{SkeletonCard,EmptyState,Badge,Sparkline}.js
-tally-app/components/ui/DataTable.js           # props-only
-tally-app/components/charts/MarginWaterfall.js # 'use client'
-tally-app/app/(app)/layout.js                  # AppShell: mounts contexts (state lives here)
-tally-app/components/shell/{AppShell,Sidebar,TopBar}.js
-tally-app/app/(app)/products/page.js           # 'use client' → facade in useEffect → states
-tally-app/app/(app)/products/loading.js        # skeleton
-tally-app/app/(app)/products/[sku]/page.js     # notFound() on null
-tally-app/app/(app)/products/[sku]/not-found.js
+carter-app/context/DateRangeContext.js
+carter-app/context/StoreContext.js
+carter-app/context/AIPanelContext.js
+carter-app/components/ui/{SkeletonCard,EmptyState,Badge,Sparkline}.js
+carter-app/components/ui/DataTable.js           # props-only
+carter-app/components/charts/MarginWaterfall.js # 'use client'
+carter-app/app/(app)/layout.js                  # AppShell: mounts contexts (state lives here)
+carter-app/components/shell/{AppShell,Sidebar,TopBar}.js
+carter-app/app/(app)/products/page.js           # 'use client' → facade in useEffect → states
+carter-app/app/(app)/products/loading.js        # skeleton
+carter-app/app/(app)/products/[sku]/page.js     # notFound() on null
+carter-app/app/(app)/products/[sku]/not-found.js
 ```
 This single slice exercises the async facade, the loading/empty/error/partial states, the Estimated flag, and Recharts-in-shell **once** — not eight times. Validate it end-to-end, then replicate the pattern.
 
 **Step 4 — Onboarding → reveal (the demo money shot).**
 ```
-tally-app/app/(auth)/login/page.js
-tally-app/app/(auth)/install/callback/page.js
-tally-app/app/onboarding/layout.js             # bare wizard chrome (progress bar)
-tally-app/app/onboarding/[step]/page.js        # connect-shopify|import-cogs|connect-ads|reveal
-tally-app/components/onboarding/{WizardStep,ConnectTile,CogsImport,RevealScreen}.js
+carter-app/app/(auth)/login/page.js
+carter-app/app/(auth)/install/callback/page.js
+carter-app/app/onboarding/layout.js             # bare wizard chrome (progress bar)
+carter-app/app/onboarding/[step]/page.js        # connect-shopify|import-cogs|connect-ads|reveal
+carter-app/components/onboarding/{WizardStep,ConnectTile,CogsImport,RevealScreen}.js
 ```
 
 **Step 5 — `/home` (4 on-wedge KPIs: CM1, CM2, CM3, CM-ROAS).**
 ```
-tally-app/components/ui/{KpiCard,ChartCard,InsightCard,OnboardingChecklist}.js
-tally-app/components/charts/CmRoasTrend.js
-tally-app/app/(app)/home/page.js
-tally-app/app/(app)/loading.js                 # shell-level skeleton
-tally-app/app/(app)/error.js                   # shell-level error boundary
+carter-app/components/ui/{KpiCard,ChartCard,InsightCard,OnboardingChecklist}.js
+carter-app/components/charts/CmRoasTrend.js
+carter-app/app/(app)/home/page.js
+carter-app/app/(app)/loading.js                 # shell-level skeleton
+carter-app/app/(app)/error.js                   # shell-level error boundary
 ```
 
 **Step 6 — `/marketing`.**
 ```
-tally-app/components/charts/RankBars.js
-tally-app/app/(app)/marketing/page.js
-tally-app/app/(app)/marketing/loading.js
+carter-app/components/charts/RankBars.js
+carter-app/app/(app)/marketing/page.js
+carter-app/app/(app)/marketing/loading.js
 ```
 
 **Step 7 — AI dock (single AI surface).**
 ```
-tally-app/components/ai/{AIPanel,ChatMessage,CitationChip,ConfidenceChip,StarterPrompts}.js
-# askTally = setInterval chunk-reveal of canned payload; STOP=clearInterval, Regenerate=replay
+carter-app/components/ai/{AIPanel,ChatMessage,CitationChip,ConfidenceChip,StarterPrompts}.js
+# askCarter = setInterval chunk-reveal of canned payload; STOP=clearInterval, Regenerate=replay
 ```
 
 **Step 8 — Alerts + Settings (load-bearing COGS).**
 ```
-tally-app/app/(app)/alerts/page.js             # 2 live + greyed runway type
-tally-app/app/(app)/settings/layout.js
-tally-app/app/(app)/settings/page.js           # redirect → integrations
-tally-app/app/(app)/settings/integrations/page.js
-tally-app/app/(app)/settings/cogs/page.js      # real CSV import + per-SKU edit
-tally-app/app/(app)/settings/alerts/page.js
+carter-app/app/(app)/alerts/page.js             # 2 live + greyed runway type
+carter-app/app/(app)/settings/layout.js
+carter-app/app/(app)/settings/page.js           # redirect → integrations
+carter-app/app/(app)/settings/integrations/page.js
+carter-app/app/(app)/settings/cogs/page.js      # real CSV import + per-SKU edit
+carter-app/app/(app)/settings/alerts/page.js
 ```
 
 **Step 9 — Stubs (one shared `EmptyState`, greyed in nav).**
 ```
-tally-app/app/(app)/cash-flow/page.js
-tally-app/app/(app)/inventory/page.js
-tally-app/app/(app)/reports/page.js
-tally-app/app/(app)/settings/team/page.js
-tally-app/app/(app)/settings/billing/page.js
+carter-app/app/(app)/cash-flow/page.js
+carter-app/app/(app)/inventory/page.js
+carter-app/app/(app)/reports/page.js
+carter-app/app/(app)/settings/team/page.js
+carter-app/app/(app)/settings/billing/page.js
 ```
 
 **App Router boundary files (add as each route lands, not optional):** `loading.js` at `(app)/`, `products/`, `marketing/`; `error.js` at `(app)/`; `not-found.js` for `products/[sku]`. These are what make the async-facade UX feel intentional instead of flashing blank panels.
@@ -354,5 +354,5 @@ tally-app/app/(app)/settings/billing/page.js
 - Port verbatim: `/Users/suman.sourabh/Suman Learning/hackthon/credes/lib/chartTheme.js`
 - **Do NOT copy literals from** (raw-input restructure required): `/Users/suman.sourabh/Suman Learning/hackthon/credes/lib/sampleData.js` (PRODUCTS bake in `cm1/cm2/cm3/cm1Pct/quadrant`; AD_CHANNELS bake in `roas/cmRoas`)
 - Presentation-only port sources: `/Users/suman.sourabh/Suman Learning/hackthon/credes/components/app/{Dashboard,Products,Marketing,CashFlow}.js`
-- New build root: `/Users/suman.sourabh/Suman Learning/hackthon/tally-app/`
+- New build root: `/Users/suman.sourabh/Suman Learning/hackthon/carter-app/`
 - Spec anchors: `/Users/suman.sourabh/Suman Learning/hackthon/credes/PRD.md`, `/Users/suman.sourabh/Suman Learning/hackthon/credes/PRODUCT_SPEC.md`

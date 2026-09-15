@@ -16,19 +16,19 @@ function DialogContent({ className, children, ...props }) {
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay
         data-slot="dialog-overlay"
-        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0"
+        className="fixed inset-0 z-50 bg-neutral-900/60 backdrop-blur-sm animate-in fade-in-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0"
       />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed left-1/2 top-1/2 z-50 grid w-full max-w-md -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl border border-border bg-card p-6 shadow-xl",
+          "fixed left-1/2 top-1/2 z-50 grid w-full max-w-md -translate-x-1/2 -translate-y-1/2 gap-4 rounded-card bg-card p-6 shadow-high",
           "animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
           className
         )}
         {...props}
       >
         {children}
-        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-md opacity-60 outline-none transition hover:opacity-100">
+        <DialogPrimitive.Close className="absolute right-4 top-4 rounded-button opacity-60 outline-none transition hover:opacity-100">
           <X className="size-4" />
           <span className="sr-only">Close</span>
         </DialogPrimitive.Close>

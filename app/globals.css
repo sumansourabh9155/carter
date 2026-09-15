@@ -4,60 +4,277 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
-  Tally design system — refined LIGHT theme, deep-orange brand accent.
-  Chrome is deliberately quiet (near-neutral surfaces, hairline borders,
-  ONE accent) so the DATA carries the color: the chart palette is richer
-  and CVD-validated (see lib/chartTheme.js). Tokens live on :root.
+  ============================================================================
+  CARTER DESIGN SYSTEM
+  ============================================================================
+  Carter is the B2B platform; this app ships as a feature inside it. Every
+  value below is lifted from the published Figma variables (1,629 tokens,
+  read from the "Carter Approval Search & Filter" Figma export and the Dev
+  Mode MCP server). Figma token names are quoted beside each value so this
+  file can be diffed against the design source.
+
+  Two structural rules that are easy to get wrong:
+
+  1. BRAND vs INTERACTIVE are different ramps. Brand/600 is #2238b0, but
+     anything you CLICK fills with interactive-background-primary = #305eff.
+     Brand is identity; interactive is affordance. Never swap them.
+
+  2. There are FIVE elevations, not one. Control, control-subtle, low-raised,
+     mid-raised, high-raised. A modal does not use a card's shadow.
+  ============================================================================
 */
 :root {
-  --radius: 0.75rem;
+  /* ---- Type families — Figma "font-body" / "font-display" / "font-mono" -- */
+  --carter-font-body: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --carter-font-display: var(--font-space-grotesk), "ABC Monument Grotesk", var(--font-inter), sans-serif;
+  --carter-font-mono: "Menlo", "SFMono-Regular", ui-monospace, Consolas, monospace;
 
-  --background: #f8f8f6;       /* near-neutral paper — calm, established */
-  --foreground: #1c1917;       /* warm near-black (stone-900) */
+  /* ---- Brand ramp — Figma "carter-brand-*" ----------------------------- */
+  --brand-50: #f4f6fe;
+  --brand-100: #e8ecfc;
+  --brand-200: #c6d0f8;
+  --brand-300: #97aaf0;
+  --brand-400: #6a85e6;
+  --brand-500: #3b5bdb;
+  --brand-600: #2238b0;
+  --brand-700: #1a2c8f;
+  --brand-800: #121f69;
+  --brand-900: #0c1646;
 
-  --card: #ffffff;
-  --card-foreground: #1c1917;
+  /* ---- Neutral ramp — Figma "carter-neutral-*" ------------------------- */
+  --neutral-0: #ffffff;
+  --neutral-50: #f8fafb;
+  --neutral-100: #f2f5f7;
+  --neutral-200: #e4eaed;
+  --neutral-300: #c9d3d9;
+  --neutral-400: #a3b3bc;
+  --neutral-500: #7d929e;
+  --neutral-600: #5f7682;
+  --neutral-700: #455a64;
+  --neutral-800: #2d3843;
+  --neutral-900: #1a2027;
 
-  --popover: #ffffff;
-  --popover-foreground: #1c1917;
+  /* ---- Status hues — Figma "carter-green|red|orange|info-*" ------------
+     NOTE: Carter's "notice" hue is ORANGE (#ef6c00), not amber/yellow. */
+  --green-100: #e8f5e9;
+  --green-200: #c8e6c9;
+  --green-500: #4caf50;
+  --green-600: #2e7d32;
+  --green-700: #1b5e20;
+  --red-100: #ffe6e6;
+  --red-200: #ffcdd2;
+  --red-500: #ef5350;
+  --red-600: #d32f2f;
+  --red-700: #c62828;
+  --orange-100: #fff3e0;
+  --orange-200: #ffcc80;
+  --orange-500: #fb8c00;
+  --orange-600: #ef6c00;
+  --orange-700: #e65100;
+  --info-100: #e5f4fd;
+  --info-200: #b3e5fc;
+  --info-500: #03a9f4;
+  --info-600: #0277bd;
+  --info-700: #01579b;
 
-  --primary: #c2410c;          /* orange-700 — deeper, more formal accent */
-  --primary-foreground: #ffffff;
+  /* ---- Interactive ramp — Figma "interactive-*" ------------------------
+     The clickable palette. `default` is at rest, `highlighted` is hover,
+     `faded` is a 9% wash, `fadedhighlighted` an 18% wash. */
+  --ia-primary: #305eff;
+  --ia-primary-hover: #2950da;
+  --ia-primary-faded: rgba(48, 94, 255, 0.09);
+  --ia-primary-faded-hover: rgba(48, 94, 255, 0.18);
+  --ia-gray-faded: rgba(108, 132, 157, 0.06);
+  --ia-gray: rgba(108, 132, 157, 0.12);
+  --ia-gray-hover: rgba(108, 132, 157, 0.18);
+  --ia-neutral: #2f4256;
+  --ia-neutral-hover: #243547;
+  --ia-positive: #00a251;
+  --ia-positive-hover: #008743;
+  --ia-positive-faded: rgba(0, 162, 81, 0.09);
+  --ia-negative: #d92d20;
+  --ia-negative-hover: #b42318;
+  --ia-negative-faded: rgba(217, 45, 32, 0.09);
+  --ia-notice: #e9690c;
+  --ia-notice-hover: #c65c10;
+  --ia-notice-faded: rgba(233, 105, 12, 0.09);
+  --ia-information: #1291d0;
+  --ia-information-hover: #0f78ad;
+  --ia-information-faded: rgba(18, 145, 208, 0.09);
 
-  --secondary: #f1f1ee;        /* neutral light wash */
-  --secondary-foreground: #44403c;
+  /* Interactive text + border */
+  --ia-text-on-primary: #ffffff;
+  --ia-text-gray: #192839;
+  --ia-text-gray-subtle: #40566d;
+  --ia-text-gray-muted: #768ea7;
+  --ia-text-primary: #2950da;
+  --ia-border-gray: #b1c1d2;
 
-  --muted: #f1f1ee;
-  --muted-foreground: #78716c; /* stone-500 — 4.6:1 on white */
+  /* ---- Semantic text — Figma "text-*" ---------------------------------- */
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-700);
+  --text-tertiary: var(--neutral-500);
+  --text-disabled: var(--neutral-400);
+  --text-link: var(--brand-500);
+  --text-on-brand: var(--neutral-0);
 
-  --accent: #f7ede2;           /* quiet warm wash (hover/selected) */
-  --accent-foreground: #9a3412;/* orange-800 */
+  /* ---- Semantic surfaces — Figma "surface-*" --------------------------- */
+  --surface-page: var(--neutral-50);
+  --surface-raised: var(--neutral-0);
+  --surface-subtle: var(--neutral-100);
+  --surface-hover: var(--neutral-100);
+  --surface-selected: var(--brand-100);
+  --surface-inverse: var(--neutral-900);
+  --surface-brand-subtle: var(--brand-100);
+  --surface-positive-subtle: var(--green-100);
+  --surface-negative-subtle: var(--red-100);
+  --surface-notice-subtle: var(--orange-100);
+  --surface-information-subtle: var(--info-100);
 
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
+  /* ---- Borders — Figma "border-*" -------------------------------------- */
+  --border-default: var(--neutral-200);
+  --border-subtle: var(--neutral-100);
+  --border-hover: var(--neutral-300);
+  --border-focus: var(--brand-500);
+  --border-negative: var(--red-600);
+  --border-w-thinner: 0.5px;
+  --border-w-thin: 1px;
+  --border-w-thick: 1.5px;
+  --border-w-thicker: 2px;
 
-  --success: #16a34a;          /* green-600 */
-  --success-foreground: #ffffff;
+  /* ---- Radius — Figma "radius-*" --------------------------------------- */
+  --rad-none: 0px;
+  --rad-xs: 4px;
+  --rad-sm: 6px;
+  --rad-md: 8px;
+  --rad-lg: 10px;
+  --rad-card: 12px; /* measured on the Card component (node 224:25467) */
+  --rad-pill: 56px;
+  --rad-full: 9999px;
 
-  --warning: #d97706;          /* amber-600 */
-  --warning-foreground: #ffffff;
+  /* ---- GRADIENTS — Figma "gradient-*" ---------------------------------
+     Carter's controls are NOT flat fills. Measured on the live platform:
+     the page background and the top bar ARE flat (#f8fafb / #0c1646), but
+     primary buttons, secondary buttons and the selected nav item all paint
+     a `background-image` gradient. Because these are background-IMAGE, a
+     `getComputedStyle().backgroundColor` read reports them as transparent —
+     which is exactly how they get missed. Always check backgroundImage.
 
-  --border: #e6e5df;           /* neutral hairline */
-  --input: #dddcd5;
-  --ring: #c2410c;
+     Note the primary button runs Brand/600 -> Brand/700, NOT the flat
+     interactive #305eff; #305eff stays for toggles, focus rings and links. */
+  --gradient-primary-button: linear-gradient(180deg, #2238b0 0%, #1a2c8f 100%);
+  --gradient-primary-button-hover: linear-gradient(180deg, #1a2c8f 0%, #121f69 100%);
+  --gradient-secondary-button: linear-gradient(180deg, #ffffff 0%, #f8fafb 100%);
+  --gradient-secondary-button-hover: linear-gradient(180deg, #f8fafb 0%, #f2f5f7 100%);
+  /* PAGE BACKGROUND — Figma "Gradient/Background/Default".
+     The ground the whole platform sits on: a warm indigo -> peach wash over
+     a flat #FBFBFB base. The side nav and content panels float on top of it
+     as white cards. This is a PAGE background, not a control fill. */
+  --gradient-background: linear-gradient(
+      49deg,
+      rgba(98, 122, 228, 0.15) 13.29%,
+      rgba(255, 194, 133, 0.15) 98.73%
+    ),
+    #fbfbfb;
 
-  --sidebar: #ffffff;
-  --sidebar-foreground: #57534e;
+  /* SELECTED SIDE-NAV ITEM — the same wash, but expressed so it is legal in
+     `background-image`. The shorthand form above ends in a bare colour
+     (`, #fbfbfb`), which `background-image` rejects outright — the whole
+     declaration gets dropped and the item renders with no gradient at all.
+     Restating the base as its own gradient layer renders identically. */
+  --gradient-nav-selected: linear-gradient(
+      49deg,
+      rgba(98, 122, 228, 0.15) 13.29%,
+      rgba(255, 194, 133, 0.15) 98.73%
+    ),
+    linear-gradient(#fbfbfb, #fbfbfb);
 
-  /* CVD-validated categorical chart palette (dataviz-checked) */
-  --chart-1: #eb6834; /* orange — revenue (brand tie-in) */
-  --chart-2: #2a78d6; /* blue   — CM1 */
-  --chart-3: #4a3aa7; /* violet — CM2 */
-  --chart-4: #1baf7a; /* green  — CM3 / profit */
-  --chart-5: #eda100; /* yellow — ad spend */
+  /* ---- Elevation — Figma "elevation-*" (FIVE levels) ------------------- */
+  --elev-control-subtle: 0px 1px 2px 0px rgba(0, 0, 0, 0.02);
+  --elev-control: 0px 4px 4px 0px rgba(0, 0, 0, 0.08);
+  --elev-low: 0px 2px 16px 0px rgba(25, 40, 57, 0.09);
+  --elev-mid: 0px 8px 24px 0px rgba(25, 40, 57, 0.12);
+  --elev-high: 0px 16px 48px -4px rgba(25, 40, 57, 0.18);
+  --elev-bottom-sheet: 0px -16px 48px -4px rgba(25, 40, 57, 0.18);
+
+  /* ---- INSET RINGS — the defining surface pattern ----------------------
+     Measured on the live platform: 62 elements carry an inset ring, exactly
+     ONE carries a real CSS border. Carter draws every card, chip, dropdown,
+     input and segmented control with `box-shadow: inset 0 0 0 1px <color>`
+     rather than `border`, so edges never affect layout or box sizing.
+     Reach for these instead of `border` on any Carter surface. */
+  --ring-default: inset 0 0 0 1px #e4eaed;
+  --ring-lift: inset 0 0 0 1px #e4eaed, 0px 1px 2px 0px rgba(25, 40, 57, 0.08);
+  --ring-control: inset 0 0 0 1px #e4eaed, 0px 4px 4px 0px rgba(0, 0, 0, 0.08);
+  --ring-positive: inset 0 0 0 1px #008743, 0px 4px 4px 0px rgba(0, 0, 0, 0.08);
+  --ring-negative: inset 0 0 0 1px #b42318, 0px 4px 4px 0px rgba(0, 0, 0, 0.08);
+  --ring-primary: inset 0 0 0 1px #2950da, 0px 4px 4px 0px rgba(0, 0, 0, 0.08);
+
+  /* ---- Layout — Figma "layout-*" --------------------------------------- */
+  --layout-side-nav-w: 240px;
+  --layout-side-nav-collapsed-w: 56px;
+  --layout-top-nav-h: 56px;
+
+  /* ---- Data table — Figma "table-*" ------------------------------------ */
+  --table-header-h: 52px;
+  --table-row-h: 52px;
+  --table-row-comfortable-h: 60px;
+
+  /* ---- Icon sizes — Figma "iconsize-*" --------------------------------- */
+  --icon-xs: 8px;
+  --icon-sm: 12px;
+  --icon-md: 16px;
+  --icon-lg: 20px;
+  --icon-xl: 24px;
+
+  /* ====================================================================
+     shadcn-compatible aliases — what the existing components consume.
+     ==================================================================== */
+  --radius: var(--rad-xs);
+
+  /* Flat fallback for the page ground. The live ground is the gradient
+     above; this is what `bg-background` resolves to for anything that needs
+     an opaque match to it. */
+  --background: #fbfbfb;
+  --foreground: var(--text-primary);
+  --card: var(--surface-raised);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-raised);
+  --popover-foreground: var(--text-primary);
+
+  --primary: var(--ia-primary);
+  --primary-foreground: var(--ia-text-on-primary);
+  --secondary: var(--neutral-100);
+  --secondary-foreground: var(--text-secondary);
+  --muted: var(--neutral-100);
+  --muted-foreground: var(--text-tertiary);
+  --accent: var(--brand-100);
+  --accent-foreground: var(--brand-700);
+
+  --destructive: var(--ia-negative);
+  --destructive-foreground: var(--neutral-0);
+  --success: var(--ia-positive);
+  --success-foreground: var(--neutral-0);
+  --warning: var(--ia-notice);
+  --warning-foreground: var(--neutral-0);
+
+  --border: var(--border-default);
+  --input: var(--border-default);
+  --ring: var(--border-focus);
+  --sidebar: var(--neutral-0);
+  --sidebar-foreground: var(--text-secondary);
+
+  /* Categorical chart palette — brand indigo first, then spread across hue
+     AND lightness so series stay separable under colour-vision deficiency. */
+  --chart-1: #2238b0;
+  --chart-2: #0277bd;
+  --chart-3: #7b1fa2;
+  --chart-4: #2e7d32;
+  --chart-5: #ef6c00;
 }
 
 @theme inline {
+  /* shadcn semantic colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -83,19 +300,114 @@
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
+
+  /* Carter ramps */
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+
+  --color-neutral-0: var(--neutral-0);
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+
+  --color-green-100: var(--green-100);
+  --color-green-600: var(--green-600);
+  --color-green-700: var(--green-700);
+  --color-red-100: var(--red-100);
+  --color-red-600: var(--red-600);
+  --color-red-700: var(--red-700);
+  --color-orange-100: var(--orange-100);
+  --color-orange-600: var(--orange-600);
+  --color-info-100: var(--info-100);
+  --color-info-600: var(--info-600);
+
+  /* Interactive ramp */
+  --color-ia-primary: var(--ia-primary);
+  --color-ia-primary-hover: var(--ia-primary-hover);
+  --color-ia-primary-faded: var(--ia-primary-faded);
+  --color-ia-gray-faded: var(--ia-gray-faded);
+  --color-ia-gray: var(--ia-gray);
+  --color-ia-gray-hover: var(--ia-gray-hover);
+  --color-ia-neutral: var(--ia-neutral);
+  --color-ia-positive: var(--ia-positive);
+  --color-ia-positive-faded: var(--ia-positive-faded);
+  --color-ia-negative: var(--ia-negative);
+  --color-ia-negative-hover: var(--ia-negative-hover);
+  --color-ia-negative-faded: var(--ia-negative-faded);
+  --color-ia-notice: var(--ia-notice);
+  --color-ia-notice-hover: var(--ia-notice-hover);
+  --color-ia-notice-faded: var(--ia-notice-faded);
+  --color-ia-information: var(--ia-information);
+  --color-ia-information-hover: var(--ia-information-hover);
+  --color-ia-information-faded: var(--ia-information-faded);
+  --color-ia-text-gray: var(--ia-text-gray);
+  --color-ia-text-primary: var(--ia-text-primary);
+  --color-ia-border-gray: var(--ia-border-gray);
+
+  /* Semantic */
+  --color-text-link: var(--text-link);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-hover: var(--border-hover);
+  --color-border-focus: var(--border-focus);
+  --color-surface-selected: var(--surface-selected);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-inverse: var(--surface-inverse);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* Radius scale */
+  --radius-xs: var(--rad-xs);
+  --radius-sm: var(--rad-sm);
+  --radius-md: var(--rad-md);
+  --radius-lg: var(--rad-lg);
+  --radius-card: var(--rad-card);
+  --radius-pill: var(--rad-pill);
+  --radius-button: var(--rad-xs);
+  --radius-nav: var(--rad-sm);
+  --radius-input: var(--rad-md);
 
-  --font-sans: var(--font-dm-sans), system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  /* Elevation */
+  --shadow-control-subtle: var(--elev-control-subtle);
+  --shadow-control: var(--elev-control);
+  --shadow-low: var(--elev-low);
+  --shadow-mid: var(--elev-mid);
+  --shadow-high: var(--elev-high);
+
+  /* Inset rings — Carter's edge treatment (use instead of `border`) */
+  --shadow-ring: var(--ring-default);
+  --shadow-ring-lift: var(--ring-lift);
+  --shadow-ring-control: var(--ring-control);
+  --shadow-ring-positive: var(--ring-positive);
+  --shadow-ring-negative: var(--ring-negative);
+  --shadow-ring-primary: var(--ring-primary);
+  --shadow-card: var(--ring-default);
+
+  /* Layout */
+  --spacing-sidenav: var(--layout-side-nav-w);
+  --spacing-topnav: var(--layout-top-nav-h);
+
+  --font-sans: var(--carter-font-body);
+  --font-display: var(--carter-font-display);
+  --font-mono: var(--carter-font-mono);
 }
 
 @layer base {
@@ -103,9 +415,15 @@
     border-color: var(--border);
   }
   body {
-    background: var(--background);
+    /* The platform ground is a GRADIENT, not a flat fill.
+       Uses the `background` shorthand because the value ends in a bare colour
+       (`, #FBFBFB`) — that is illegal in `background-image` and would be
+       dropped. `fixed` anchors the wash to the viewport so it reads as one
+       continuous ground instead of restretching to each page's height. */
+    background: var(--gradient-background);
+    background-attachment: fixed;
     color: var(--foreground);
-    font-family: var(--font-sans);
+    font-family: var(--carter-font-body);
     -webkit-font-smoothing: antialiased;
   }
   ::-webkit-scrollbar {
@@ -116,16 +434,117 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.12);
+    background: rgba(108, 132, 157, 0.32);
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 0, 0, 0.22);
+    background: rgba(108, 132, 157, 0.5);
   }
 }
 
-/* numeric / financial figures */
+/*
+  Carter type scale — Figma "type-*". One class per published text style.
+  Display styles use Space Grotesk; everything else is Inter.
+*/
+@layer components {
+  .t-display-lg {
+    font-family: var(--carter-font-display);
+    font-size: 40px;
+    line-height: 46px;
+    font-weight: 700;
+  }
+  .t-display-md {
+    font-family: var(--carter-font-display);
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 700;
+  }
+  .t-display-eyebrow {
+    font-family: var(--carter-font-display);
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 400;
+  }
+  .t-heading-lg {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+  }
+  .t-heading-md {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 600;
+  }
+  .t-body-lg {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+  }
+  .t-body-lg-semibold {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 600;
+  }
+  .t-body {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+  }
+  .t-body-strong {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+  }
+  .t-body-semibold {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 600;
+  }
+  .t-control-label {
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 600;
+  }
+  .t-label-xl {
+    font-size: 14px;
+    line-height: 16px;
+    font-weight: 500;
+  }
+  .t-label-lg {
+    font-size: 13px;
+    line-height: 16px;
+    font-weight: 500;
+  }
+  .t-label {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+  }
+  .t-label-sm {
+    font-size: 11px;
+    line-height: 14px;
+    font-weight: 500;
+  }
+  .t-label-overline {
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 500;
+  }
+  .t-nav-item {
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 500;
+  }
+  .t-nav-item-active {
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 600;
+  }
+}
+
+/* Financial figures. Carter's body face is Inter; tabular figures come from
+   its own `tnum` feature rather than switching to the mono face. */
 .tabular {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }

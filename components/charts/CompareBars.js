@@ -2,8 +2,8 @@
 // the row's max. Values arrive pre-formatted from the server resolver so
 // this stays a pure presenter.
 
-const A_COLOR = "#eb6834";
-const B_COLOR = "#2a78d6";
+const A_COLOR = "#2238b0";
+const B_COLOR = "#0277bd";
 
 export function CompareBars({ aName, bName, rows }) {
   if (!rows?.length) return null;
@@ -25,13 +25,13 @@ export function CompareBars({ aName, bName, rows }) {
               <div className="mb-1 text-xs font-medium text-muted-foreground">{r.label}</div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-black/[0.04]">
+                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-ia-gray">
                     <div className="h-full rounded-full" style={{ width: `${(Math.abs(r.aVal) / max) * 100}%`, background: A_COLOR }} />
                   </div>
                   <span className="tabular w-20 text-right text-xs font-semibold">{r.aText}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-black/[0.04]">
+                  <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-ia-gray">
                     <div className="h-full rounded-full" style={{ width: `${(Math.abs(r.bVal) / max) * 100}%`, background: B_COLOR }} />
                   </div>
                   <span className="tabular w-20 text-right text-xs font-semibold">{r.bText}</span>

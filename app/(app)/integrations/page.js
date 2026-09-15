@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 const INITIAL_CONNECTIONS = [
   { id: "shopify", name: "Shopify", logo: "shopify.svg", status: "connected", detail: "Orders, products, payouts · synced 8m ago", phase: 1 },
-  { id: "webpixel", name: "Tally Web Pixel", icon: MousePointerClick, status: "connected", detail: "On-site behavior via Shopify Web Pixels API · streaming live", phase: 1 },
+  { id: "webpixel", name: "Carter Web Pixel", icon: MousePointerClick, status: "connected", detail: "On-site behavior via Shopify Web Pixels API · streaming live", phase: 1 },
   { id: "meta", name: "Meta Ads", logo: "meta.svg", status: "connected", detail: "Spend & catalog · synced 12m ago", phase: 1 },
   { id: "google", name: "Google Ads", logo: "google.svg", status: "connected", detail: "Spend & conversions · synced 15m ago", phase: 1 },
   { id: "tiktok", name: "TikTok Ads", logo: "tiktok.svg", status: "connected", detail: "Spend & catalog · synced 5m ago", phase: 1 },
@@ -42,11 +42,11 @@ export default function IntegrationsPage() {
 
   return (
     <PageContainer>
-      <PageHeader eyebrow="Your data sources" title="Integrations" description="Connect once; Tally keeps everything reconciled. Sync health is shown — never a silent failure." />
+      <PageHeader eyebrow="Your data sources" title="Integrations" description="Connect once; Carter keeps everything reconciled. Sync health is shown — never a silent failure." />
       <div className="grid gap-3 sm:grid-cols-2">
         {connections.map((c) => (
           <Card key={c.id} className="flex items-center gap-4 p-4">
-            <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-border bg-white p-2.5">
+            <span className="grid size-11 shrink-0 place-items-center rounded-card shadow-ring bg-white p-2.5">
               {c.icon ? (
                 <c.icon className="size-5 text-muted-foreground" />
               ) : (

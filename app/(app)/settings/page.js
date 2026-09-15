@@ -39,7 +39,7 @@ export default function SettingsPage() {
       {/* COGS coverage — load-bearing for trustworthy margins */}
       <Card className="p-5">
         <div className="flex items-start gap-3">
-          <span className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary"><Database className="size-4.5" /></span>
+          <span className="grid size-9 place-items-center rounded-input bg-primary/10 text-primary"><Database className="size-4.5" /></span>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold">Cost of goods (COGS)</h3>

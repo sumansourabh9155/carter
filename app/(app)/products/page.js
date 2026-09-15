@@ -9,7 +9,16 @@ import { QUADRANT_META } from "@/lib/compute/margin";
 import { LIFECYCLE_META } from "@/lib/compute/lifecycle";
 import { PageHeader, PageContainer } from "@/components/PageHeader";
 import { ProductThumb } from "@/components/ProductThumb";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableToolbar,
+  TablePagination,
+} from "@/components/ui/table";
 import { Select } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -91,13 +100,19 @@ export default function ProductsPage() {
       </div>
 
       <Card className="overflow-hidden p-0">
+        {/* Section heading lives INSIDE the card, above the table — Carter's
+            "Breadcrumb Container" pattern (title over subtitle). */}
+        <TableToolbar
+          title="All products"
+          description="Every SKU ranked by fully-loaded contribution margin."
+        />
         {loading ? (
           <div className="space-y-2 p-4">
             {[0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-10 w-full" />)}
           </div>
         ) : rows.length === 0 ? (
           <div className="flex flex-col items-center gap-2 px-6 py-16 text-center">
-            <span className="grid size-11 place-items-center rounded-xl bg-black/[0.03] text-muted-foreground">
+            <span className="grid size-11 place-items-center rounded-card bg-ia-gray-faded text-muted-foreground">
               <PackageSearch className="size-5" />
             </span>
             <p className="text-sm font-medium">No products match these filters</p>
@@ -161,6 +176,7 @@ export default function ProductsPage() {
             </TableBody>
           </Table>
         )}
+        {!loading && rows.length > 0 && <TablePagination itemsFound={rows.length} />}
       </Card>
     </PageContainer>
   );

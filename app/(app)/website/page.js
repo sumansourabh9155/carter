@@ -10,7 +10,15 @@ import { ProductThumb } from "@/components/ProductThumb";
 import { KpiCard } from "@/components/ui/KpiCard";
 import { ChartCard } from "@/components/ChartCard";
 import { FunnelSteps } from "@/components/charts/FunnelSteps";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+  TableToolbar,
+} from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,7 +45,7 @@ export default function WebsitePage() {
   return (
     <PageContainer>
       <PageHeader
-        eyebrow="On-site behavior · Tally Web Pixel"
+        eyebrow="On-site behavior · Carter Web Pixel"
         title="Website"
         description="What visitors actually do between landing and buying — collected first-party via Shopify's Web Pixels API, reconciled against real orders."
       />
@@ -79,7 +87,7 @@ export default function WebsitePage() {
                         {s.sessions.toLocaleString()} sessions · <span className={cn("font-semibold", s.convPct >= data.sessionConvPct ? "text-success" : "text-foreground/70")}>{pct(s.convPct)}</span> convert
                       </span>
                     </div>
-                    <div className="h-2 overflow-hidden rounded-full bg-black/[0.05]">
+                    <div className="h-2 overflow-hidden rounded-full bg-ia-gray">
                       <div className="h-full rounded-full" style={{ width: `${(s.sessions / max) * 100}%`, background: s.color }} />
                     </div>
                   </div>
@@ -92,7 +100,7 @@ export default function WebsitePage() {
 
       {!loading && worst && (
         <Card className="flex items-start gap-3 border-destructive/25 bg-destructive/[0.04] p-4">
-          <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-destructive/15 text-destructive">
+          <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-input bg-destructive/15 text-destructive">
             <MousePointerClick className="size-4" />
           </span>
           <p className="text-sm">
@@ -104,10 +112,10 @@ export default function WebsitePage() {
       )}
 
       <Card className="overflow-hidden p-0">
-        <div className="border-b border-border p-4">
-          <h3 className="text-sm font-semibold">Funnel by product</h3>
-          <p className="mt-0.5 text-xs text-muted-foreground">Each stage's conversion vs the catalog average — the verdict says which fix each product actually needs.</p>
-        </div>
+        <TableToolbar
+          title="Funnel by product"
+          description="Each stage's conversion vs the catalog average — the verdict says which fix each product actually needs."
+        />
         {loading || !data ? (
           <div className="space-y-2 p-4">{[0, 1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-10 w-full" />)}</div>
         ) : (

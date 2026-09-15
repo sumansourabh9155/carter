@@ -8,7 +8,7 @@ export function AIPanelProvider({ children }) {
   const [open, setOpen] = useState(false);
   const [pendingPrompt, setPendingPrompt] = useState(null);
 
-  // Open the dock, optionally pre-seeding a prompt (from an "Ask Tally" affordance).
+  // Open the dock, optionally pre-seeding a prompt (from an "Ask Carter" affordance).
   const openPanel = useCallback((prompt) => {
     if (prompt) setPendingPrompt({ text: prompt, at: Date.now() });
     setOpen(true);

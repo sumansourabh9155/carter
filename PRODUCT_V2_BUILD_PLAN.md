@@ -1,8 +1,8 @@
-# Tally V2 — Build Plan: The Autonomous Financial OS for Shopify Brands
+# Carter V2 — Build Plan: The Autonomous Financial OS for Shopify Brands
 
-**Status:** Proposed. This is the plan to take Tally from a Phase‑1 demo (mock facade, canned/assisted Aura, read‑only) to a **market‑ready, AI‑first, fully‑automated product** where **Aura is the product**, not a side panel.
+**Status:** Proposed. This is the plan to take Carter from a Phase‑1 demo (mock facade, canned/assisted Aura, read‑only) to a **market‑ready, AI‑first, fully‑automated product** where **Aura is the product**, not a side panel.
 
-**North star:** A Shopify brand connects Tally once, and from then on Aura runs the finance function for them — watching every dollar across margin, ads, website, supply and cash; explaining what's happening in plain English; and *doing* the work (with the founder's approval, then increasingly on autopilot).
+**North star:** A Shopify brand connects Carter once, and from then on Aura runs the finance function for them — watching every dollar across margin, ads, website, supply and cash; explaining what's happening in plain English; and *doing* the work (with the founder's approval, then increasingly on autopilot).
 
 > The bet: founders don't want another dashboard. They want the answer, and then they want it done. The winning product is the one that removes the analyst, not the one with the prettiest charts.
 
@@ -12,7 +12,7 @@
 
 | Layer | Today (Phase‑1 demo) | V2 (market‑ready) |
 |---|---|---|
-| **Data** | `lib/api/mock/*` reads seed files | Live Shopify GraphQL, ad APIs, bank, 3PL, accounting, Tally Web Pixel — ingested, normalized, reconciled |
+| **Data** | `lib/api/mock/*` reads seed files | Live Shopify GraphQL, ad APIs, bank, 3PL, accounting, Carter Web Pixel — ingested, normalized, reconciled |
 | **Truth** | Pure margin engine on seed inputs | Real **ledger + semantic metric layer** tied to actual bank payouts; metrics defined once, computed everywhere |
 | **Aura** | Single‑turn `/api/aura`, context‑injected, read‑only, manually opened; canned + embeddings fallback | **Agentic**: multi‑step tool use, proactive/scheduled, memory, and **actions with approval → autopilot** |
 | **Surface** | Pages you navigate; Aura is a dock | Aura is the **home**: converse, ambient briefings, autopilot. Pages become drill‑downs Aura links to |
@@ -154,7 +154,7 @@ Built **before** heavy UI — it is the source of truth and Aura's substrate. (T
 
 ## 6. Architecture & stack
 
-- **App:** Next.js (App Router) front end; **embedded Shopify app** (App Bridge + Polaris‑compatible theming) so Tally lives inside Shopify admin, plus standalone web.
+- **App:** Next.js (App Router) front end; **embedded Shopify app** (App Bridge + Polaris‑compatible theming) so Carter lives inside Shopify admin, plus standalone web.
 - **Services:** an API/orchestration layer; a **sync/ingestion service** (queue‑driven workers); the **Aura agent service** (tool runtime, model routing, memory); the **actions service** (adapters, approvals, undo, audit).
 - **Data:** Postgres (transactional, multi‑tenant, row‑level isolation) + a columnar warehouse (analytics/metrics at scale) + object storage (receipts, exports) + vector store (retrieval).
 - **Async:** durable queue + scheduler (crons/watchers), idempotent workers, backfill jobs.

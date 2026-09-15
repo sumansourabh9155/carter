@@ -19,12 +19,12 @@ function SimpleTooltip({ active, payload, label, yFormat }) {
   const fmt = yFormat === "money" ? FMT.moneyFull : yFormat === "mult" ? FMT.mult : FMT.numberFull;
   return (
     <div style={{ background: "#fff", border: "1px solid rgba(0,0,0,0.08)", borderRadius: 10, padding: "8px 12px", fontSize: 12, boxShadow: "0 8px 28px rgba(28,25,23,0.12)" }}>
-      <div style={{ color: "#78716c", marginBottom: 6, fontWeight: 600, fontSize: 11 }}>{label}</div>
+      <div style={{ color: "#7d929e", marginBottom: 6, fontWeight: 600, fontSize: 11 }}>{label}</div>
       {payload.map((p) => (
         <div key={p.dataKey} style={{ display: "flex", justifyContent: "space-between", gap: 14, marginBottom: 2 }}>
           <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
             <span style={{ width: 8, height: 8, borderRadius: "50%", background: p.color }} />
-            <span style={{ color: "#78716c" }}>{p.name}</span>
+            <span style={{ color: "#7d929e" }}>{p.name}</span>
           </span>
           <span style={{ fontWeight: 700 }}>{fmt(p.value)}</span>
         </div>
@@ -43,7 +43,7 @@ export function LinesChart({ data, xKey, series, height = 200, yFormat = "number
           <YAxis {...AXIS_PROPS} tickFormatter={FMT[yFormat] || FMT.number} width={46} />
           <Tooltip content={<SimpleTooltip yFormat={yFormat} />} />
           {series.length > 1 && (
-            <Legend iconType="plainline" wrapperStyle={{ fontSize: 11 }} formatter={(v) => <span style={{ color: "#94a3b8" }}>{v}</span>} />
+            <Legend iconType="plainline" wrapperStyle={{ fontSize: 11 }} formatter={(v) => <span style={{ color: "#a3b3bc" }}>{v}</span>} />
           )}
           {series.map((s) => (
             <Line key={s.key} type="monotone" dataKey={s.key} name={s.name} stroke={s.color} strokeWidth={2} dot={false} strokeDasharray={s.dashed ? "5 4" : undefined} />

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Sparkles, ArrowUp, Square, RotateCcw, FileText, ShieldCheck, Clock, Lightbulb, CornerDownRight, MessageSquarePlus, Zap } from "lucide-react";
-import { askTally } from "@/lib/api";
+import { askCarter } from "@/lib/api";
 import { STARTER_GROUPS, FOLLOWUPS, resetChatContext } from "@/lib/api/mock/ai";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -16,7 +16,7 @@ import { CompareBars } from "@/components/charts/CompareBars";
 import { AudienceBreakdown } from "@/components/charts/AudienceBreakdown";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "tally-chat-v1";
+const STORAGE_KEY = "carter-chat-v1";
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -37,7 +37,7 @@ function Rich({ text }) {
 function ChatChart({ chart }) {
   if (!chart) return null;
   return (
-    <div className="rounded-xl border border-border bg-card p-4">
+    <div className="rounded-card shadow-ring bg-card p-4">
       <h4 className="text-sm font-semibold">{chart.title}</h4>
       {chart.subtitle && <p className="mt-0.5 mb-3 text-xs text-muted-foreground">{chart.subtitle}</p>}
       {chart.type === "waterfall" && <MarginWaterfall data={chart.data} height={180} />}
@@ -82,7 +82,7 @@ function AnswerCard({ payload, lastUserText, onRegenerate, onFollowup }) {
       {payload.metrics?.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {payload.metrics.map((m) => (
-            <div key={m.label} className="rounded-lg border border-border bg-card px-3 py-1.5">
+            <div key={m.label} className="rounded-input shadow-ring bg-card px-3 py-1.5">
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{m.label}</div>
               <div className="tabular text-sm font-semibold">{m.value}</div>
             </div>
@@ -98,7 +98,7 @@ function AnswerCard({ payload, lastUserText, onRegenerate, onFollowup }) {
             <Link
               key={c.href}
               href={c.href}
-              className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-xs text-primary transition-colors hover:bg-primary/15"
+              className="inline-flex items-center gap-1 rounded-button bg-primary/10 px-2 py-1 text-xs text-primary transition-colors hover:bg-primary/15"
             >
               <FileText className="size-3" />
               {c.label}
@@ -124,7 +124,7 @@ function AnswerCard({ payload, lastUserText, onRegenerate, onFollowup }) {
             <button
               key={f.q}
               onClick={() => onFollowup(f.q)}
-              className="rounded-full border border-border bg-card px-2.5 py-1 text-xs text-foreground/80 transition-colors hover:border-primary/40 hover:bg-primary/[0.06] hover:text-primary"
+              className="rounded-full shadow-ring bg-card px-2.5 py-1 text-xs text-foreground/80 transition-colors hover:border-primary/40 hover:bg-primary/[0.06] hover:text-primary"
             >
               {f.label}
             </button>
@@ -135,7 +135,7 @@ function AnswerCard({ payload, lastUserText, onRegenerate, onFollowup }) {
   );
 }
 
-export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
+export function CarterChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -166,7 +166,7 @@ export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
     ]);
     setInput("");
 
-    const payload = await askTally(text, history);
+    const payload = await askCarter(text, history);
     update(aid, { steps: payload.steps });
     for (let i = 0; i < payload.steps.length; i++) {
       await sleep(600);
@@ -181,7 +181,7 @@ export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
     abortRef.current = true;
   }
 
-  // Auto-run a seeded prompt (from an "Ask Tally" affordance).
+  // Auto-run a seeded prompt (from an "Ask Carter" affordance).
   useEffect(() => {
     if (seedPrompt?.text) {
       run(seedPrompt.text);
@@ -230,10 +230,10 @@ export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4">
         {empty ? (
           <div className="flex h-full flex-col items-center justify-center px-6 text-center">
-            <span className="mb-4 grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 text-white shadow-lg shadow-primary/20">
+            <span className="mb-4 grid size-14 place-items-center rounded-card bg-[image:var(--gradient-primary-button)] text-white shadow-mid">
               <Sparkles className="size-6" />
             </span>
-            <h3 className="text-base font-semibold">Ask Tally anything</h3>
+            <h3 className="text-base font-semibold">Ask Carter anything</h3>
             <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
               Your AI CFO — it reasons across margin, ads, inventory &amp; cash to answer the questions no single number can. Always cited.
             </p>
@@ -246,7 +246,7 @@ export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
             <div className="flex justify-end">
               <button
                 onClick={newChat}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-black/[0.04] hover:text-foreground"
+                className="inline-flex items-center gap-1 rounded-button px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-ia-gray hover:text-foreground"
               >
                 <MessageSquarePlus className="size-3.5" /> New chat
               </button>
@@ -254,13 +254,13 @@ export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
             {messages.map((m) =>
               m.role === "user" ? (
                 <div key={m.id} className="flex justify-end">
-                  <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-primary px-3.5 py-2 text-sm text-primary-foreground">
+                  <div className="max-w-[85%] rounded-card rounded-br-sm bg-primary px-3.5 py-2 text-sm text-primary-foreground">
                     {m.text}
                   </div>
                 </div>
               ) : (
                 <div key={m.id} className="flex gap-2.5">
-                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-orange-500 to-orange-700 text-white">
+                  <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-input bg-[image:var(--gradient-primary-button)] text-white">
                     <Sparkles className="size-3.5" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -291,13 +291,13 @@ export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
             e.preventDefault();
             run(input);
           }}
-          className="flex items-end gap-2 rounded-xl border border-border bg-card p-2 focus-within:border-primary/40"
+          className="flex items-end gap-2 rounded-card shadow-ring bg-card p-2 focus-within:border-primary/40"
         >
           <button
             type="button"
             onClick={() => setExamplesOpen(true)}
             title="Example questions"
-            className="grid size-8 shrink-0 self-end place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-black/[0.04] hover:text-foreground"
+            className="grid size-8 shrink-0 self-end place-items-center rounded-input text-muted-foreground transition-colors hover:bg-ia-gray hover:text-foreground"
           >
             <Lightbulb className="size-4" />
           </button>
@@ -325,14 +325,14 @@ export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
           )}
         </form>
         <p className="mt-1.5 px-1 text-center text-[10px] text-muted-foreground/70">
-          Read-only in this demo · Tally never guesses — it cites or asks
+          Read-only in this demo · Carter never guesses — it cites or asks
         </p>
       </div>
 
       <Dialog open={examplesOpen} onOpenChange={setExamplesOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>What can I ask Tally?</DialogTitle>
+            <DialogTitle>What can I ask Carter?</DialogTitle>
             <DialogDescription>The hard, cross-domain questions — pick one to start.</DialogDescription>
           </DialogHeader>
           <div className="-mr-1 max-h-[58vh] space-y-4 overflow-y-auto pr-1">
@@ -349,7 +349,7 @@ export function TallyChat({ seedPrompt, onConsumeSeed, variant = "page" }) {
                         setExamplesOpen(false);
                         run(p);
                       }}
-                      className="w-full rounded-lg border border-border bg-card px-3 py-2 text-left text-sm leading-snug text-foreground/90 transition-colors hover:border-primary/30 hover:bg-black/[0.04]"
+                      className="w-full rounded-input shadow-ring bg-card px-3 py-2 text-left text-sm leading-snug text-foreground/90 transition-colors hover:border-primary/30 hover:bg-ia-gray"
                     >
                       {p}
                     </button>

@@ -12,8 +12,8 @@ import { getLosingHero, getDataReadiness, getInsightsBoard } from "@/lib/api";
 function MadeByBadge() {
   return (
     <div className="pointer-events-none fixed bottom-3 right-4 z-40 select-none">
-      <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-border bg-card/90 px-3 py-1.5 text-[11px] opacity-95 shadow-sm backdrop-blur-sm transition-opacity hover:opacity-100">
-        <span className="size-1.5 shrink-0 rounded-full bg-gradient-to-br from-orange-500 to-orange-700" />
+      <div className="pointer-events-auto flex items-center gap-2 rounded-full shadow-ring bg-card px-3 py-1.5 text-[11px] opacity-95 backdrop-blur-sm transition-opacity hover:opacity-100">
+        <span className="size-1.5 shrink-0 rounded-full bg-[image:var(--gradient-primary-button)]" />
         <span className="text-muted-foreground">
           Built by <span className="font-semibold text-foreground">Suman Sourabh</span> &amp; <span className="font-semibold text-foreground">Kanhaiya Kumar</span>
         </span>
@@ -46,12 +46,17 @@ export function AppShell({ children }) {
     };
   }, []);
 
+  // Carter's shell: the dark navy top bar spans the FULL width at 56px, and
+  // the 240px side nav sits BELOW it — not beside a nested column. Measured
+  // off the platform (header y=0 h=56 w=100%; sidebar y=56 w=240).
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
-      <Sidebar signals={signals} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar signals={signals} />
-        <main className="flex-1">{children}</main>
+    // No background here on purpose — the page gradient lives on <body> and
+    // must show through the shell, the side nav and the gutters.
+    <div className="min-h-screen text-foreground">
+      <TopBar signals={signals} />
+      <div className="flex">
+        <Sidebar signals={signals} />
+        <main className="min-w-0 flex-1">{children}</main>
       </div>
       <AIPanel />
       {showCredit && <MadeByBadge />}

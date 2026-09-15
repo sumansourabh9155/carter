@@ -22,7 +22,7 @@ export function AudienceBreakdown({ segments, blendedCmRoas, compact = false }) 
               {s.cmRoas != null && (
                 <span
                   className={cn(
-                    "tabular rounded-md px-1.5 py-0.5 text-[11px] font-semibold",
+                    "tabular rounded-button px-1.5 py-0.5 text-[11px] font-semibold",
                     below ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"
                   )}
                   title={below ? "Below your blended CM-ROAS — dragging the average down" : "Above your blended CM-ROAS — pulling its weight"}
@@ -31,7 +31,7 @@ export function AudienceBreakdown({ segments, blendedCmRoas, compact = false }) 
                 </span>
               )}
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-black/[0.05]">
+            <div className="h-2 overflow-hidden rounded-full bg-ia-gray">
               <div className="h-full rounded-full" style={{ width: `${(s.spendSharePct / maxSpend) * 100}%`, background: s.color }} />
             </div>
             {!compact && (

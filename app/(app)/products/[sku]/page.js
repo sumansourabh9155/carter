@@ -22,7 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { money, pct, multiple, signed } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-const SPLIT_COLORS = ["#eb6834", "#2a78d6", "#4a3aa7", "#e87ba4", "#1baf7a"];
+const SPLIT_COLORS = ["#2238b0", "#0277bd", "#7b1fa2", "#7b1fa2", "#2e7d32"];
 
 // Compact horizontal split (device or age) for the product audience card.
 function SplitBars({ title, segments }) {
@@ -33,7 +33,7 @@ function SplitBars({ title, segments }) {
         {segments.map((s, i) => (
           <div key={s.id} className="flex items-center gap-2">
             <span className="w-14 shrink-0 text-xs">{s.label}</span>
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-black/[0.05]">
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-ia-gray">
               <div className="h-full rounded-full" style={{ width: `${s.pct}%`, background: SPLIT_COLORS[i % SPLIT_COLORS.length] }} />
             </div>
             <span className="tabular w-9 shrink-0 text-right text-xs font-medium">{s.pct}%</span>
@@ -46,14 +46,14 @@ function SplitBars({ title, segments }) {
 
 function buildWaterfall(p) {
   return [
-    { name: "Revenue", value: p.revenue, fill: "#eb6834" },
-    { name: "− COGS", value: -p.cogs, fill: "#d6d3d1" },
-    { name: "− Ship/Fees/Ret", value: -(p.shipping + p.fees + p.returns), fill: "#d6d3d1" },
-    { name: "CM1", value: p.cm1, fill: "#2a78d6", marker: true },
-    { name: "− Ad spend", value: -p.adSpend, fill: "#eda100" },
-    { name: "CM2", value: p.cm2, fill: "#4a3aa7", marker: true },
-    { name: "− Overhead", value: -p.overheadAlloc, fill: "#d6d3d1" },
-    { name: "CM3", value: p.cm3, fill: "#1baf7a", marker: true },
+    { name: "Revenue", value: p.revenue, fill: "#2238b0" },
+    { name: "− COGS", value: -p.cogs, fill: "#e4eaed" },
+    { name: "− Ship/Fees/Ret", value: -(p.shipping + p.fees + p.returns), fill: "#e4eaed" },
+    { name: "CM1", value: p.cm1, fill: "#0277bd", marker: true },
+    { name: "− Ad spend", value: -p.adSpend, fill: "#ef6c00" },
+    { name: "CM2", value: p.cm2, fill: "#7b1fa2", marker: true },
+    { name: "− Overhead", value: -p.overheadAlloc, fill: "#e4eaed" },
+    { name: "CM3", value: p.cm3, fill: "#2e7d32", marker: true },
   ];
 }
 
@@ -99,7 +99,7 @@ export default function ProductDetailPage() {
 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-center gap-3">
-          <ProductThumb id={p.id} name={p.name} size={56} rounded="rounded-lg" />
+          <ProductThumb id={p.id} name={p.name} size={56} rounded="rounded-input" />
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-semibold">{p.name}</h1>
@@ -114,7 +114,7 @@ export default function ProductDetailPage() {
           </div>
         </div>
         <Button variant="outline" onClick={() => openPanel(prompt)}>
-          <Sparkles className="size-4" /> Ask Tally
+          <Sparkles className="size-4" /> Ask Carter
         </Button>
       </div>
 
@@ -127,7 +127,7 @@ export default function ProductDetailPage() {
 
       <ChartCard title="Where this SKU's money goes" subtitle={`${p.units.toLocaleString()} units · ${money(p.revenue)} revenue`}>
         <MarginWaterfall data={buildWaterfall(p)} height={240} />
-        <p className="mt-4 rounded-lg border border-border bg-black/[0.02] px-4 py-3 text-sm text-foreground/90">{takeaway}</p>
+        <p className="mt-4 rounded-input shadow-ring bg-ia-gray-faded px-4 py-3 text-sm text-foreground/90">{takeaway}</p>
       </ChartCard>
 
       {cp && (
@@ -143,7 +143,7 @@ export default function ProductDetailPage() {
                 {cp.paidUnits.toLocaleString()} paid ({pct(cp.paidSharePct)}) · {cp.earnedUnits.toLocaleString()} earned
               </span>
             </div>
-            <div className="flex h-2.5 overflow-hidden rounded-full bg-black/[0.06]">
+            <div className="flex h-2.5 overflow-hidden rounded-full bg-ia-gray">
               <div className="h-full bg-primary" style={{ width: `${cp.paidSharePct}%` }} />
               <div className="h-full bg-emerald-500/70" style={{ width: `${100 - cp.paidSharePct}%` }} />
             </div>
@@ -162,14 +162,14 @@ export default function ProductDetailPage() {
             breakeven={1}
           />
           {channelTakeaway && (
-            <p className="mt-4 rounded-lg border border-border bg-black/[0.02] px-4 py-3 text-sm text-foreground/90">{channelTakeaway}</p>
+            <p className="mt-4 rounded-input shadow-ring bg-ia-gray-faded px-4 py-3 text-sm text-foreground/90">{channelTakeaway}</p>
           )}
         </ChartCard>
       )}
 
       {p.funnel && (
         <ChartCard
-          title="On-site behavior — from the Tally Web Pixel"
+          title="On-site behavior — from the Carter Web Pixel"
           subtitle="How visitors move from viewing this product to buying it, this period"
           action={
             <span
@@ -181,27 +181,27 @@ export default function ProductDetailPage() {
           }
         >
           <div className="grid gap-3 sm:grid-cols-4">
-            <div className="rounded-lg border border-border p-3">
+            <div className="rounded-input shadow-ring p-3">
               <div className="text-xs text-muted-foreground">Product views</div>
               <div className="tabular mt-0.5 text-lg font-semibold">{p.funnel.views.toLocaleString()}</div>
             </div>
-            <div className="rounded-lg border border-border p-3">
+            <div className="rounded-input shadow-ring p-3">
               <div className="text-xs text-muted-foreground">Added to cart</div>
               <div className="tabular mt-0.5 text-lg font-semibold">{p.funnel.atc.toLocaleString()}</div>
               <div className="text-[11px] text-muted-foreground">{pct(p.funnel.viewToAtcPct)} of views</div>
             </div>
-            <div className="rounded-lg border border-border p-3">
+            <div className="rounded-input shadow-ring p-3">
               <div className="text-xs text-muted-foreground">Reached checkout</div>
               <div className="tabular mt-0.5 text-lg font-semibold">{p.funnel.checkout.toLocaleString()}</div>
               <div className="text-[11px] text-muted-foreground">{pct(p.funnel.atcToCheckoutPct)} of cart</div>
             </div>
-            <div className="rounded-lg border border-border p-3">
+            <div className="rounded-input shadow-ring p-3">
               <div className="text-xs text-muted-foreground">View → purchase</div>
               <div className="tabular mt-0.5 text-lg font-semibold">{pct(p.funnel.overallConvPct)}</div>
               <div className="text-[11px] text-muted-foreground">{p.units.toLocaleString()} units sold</div>
             </div>
           </div>
-          <p className="mt-4 rounded-lg border border-border bg-black/[0.02] px-4 py-3 text-sm text-foreground/90">
+          <p className="mt-4 rounded-input shadow-ring bg-ia-gray-faded px-4 py-3 text-sm text-foreground/90">
             {FUNNEL_VERDICT_META[p.funnel.verdict].desc}
           </p>
         </ChartCard>
@@ -219,7 +219,7 @@ export default function ProductDetailPage() {
           <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3 text-xs">
             <span className="text-muted-foreground">Top regions:</span>
             {p.audience.topRegions.map((r) => (
-              <span key={r} className="rounded-full border border-border bg-card px-2.5 py-1 font-medium">{r}</span>
+              <span key={r} className="rounded-full shadow-ring bg-card px-2.5 py-1 font-medium">{r}</span>
             ))}
             <span className="ml-auto text-muted-foreground">
               Skews <span className="font-medium text-foreground">{p.audience.topAge.label}</span> · <span className="font-medium text-foreground">{p.audience.topDevice.label}</span>
@@ -237,7 +237,7 @@ export default function ProductDetailPage() {
           <div>
             <div className="text-xs text-muted-foreground">Recent demand trend</div>
             <div className="mt-1 flex items-center gap-2">
-              <Sparkline data={p.spark} color={p.trendPct < 0 ? "#ef4444" : "#eb6834"} />
+              <Sparkline data={p.spark} color={p.trendPct < 0 ? "#d32f2f" : "#2238b0"} />
               <span className={cn("tabular text-sm font-medium", signed(p.trendPct).dir === "up" ? "text-success" : signed(p.trendPct).dir === "down" ? "text-destructive" : "text-muted-foreground")}>
                 {signed(p.trendPct).text}
               </span>
@@ -252,22 +252,22 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-lg border border-border p-3">
+          <div className="rounded-input shadow-ring p-3">
             <div className="text-xs text-muted-foreground">On hand</div>
             <div className="tabular mt-0.5 text-sm font-semibold">{p.onHand?.toLocaleString() ?? "—"} units</div>
           </div>
-          <div className="rounded-lg border border-border p-3">
+          <div className="rounded-input shadow-ring p-3">
             <div className="text-xs text-muted-foreground">Reorder point</div>
             <div className="tabular mt-0.5 text-sm font-semibold">{p.reorderPointUnits?.toLocaleString() ?? "—"} units</div>
           </div>
-          <div className="rounded-lg border border-border p-3">
+          <div className="rounded-input shadow-ring p-3">
             <div className="text-xs text-muted-foreground">Lead time used</div>
             <div className="tabular mt-0.5 text-sm font-semibold">{p.leadTimeDaysUsed} days</div>
           </div>
         </div>
 
         <div className={cn(
-          "mt-4 flex items-start gap-3 rounded-lg border p-3.5",
+          "mt-4 flex items-start gap-3 rounded-input border p-3.5",
           p.stockoutRisk ? "border-destructive/25 bg-destructive/[0.04]" : p.needsReorderNow ? "border-warning/25 bg-warning/[0.04]" : "border-success/25 bg-success/[0.04]"
         )}>
           <PackageSearch className={cn("mt-0.5 size-4 shrink-0", p.stockoutRisk ? "text-destructive" : p.needsReorderNow ? "text-warning" : "text-success")} />

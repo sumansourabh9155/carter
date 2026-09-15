@@ -1,18 +1,21 @@
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
-const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
-const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
+// Carter ships two faces (Figma "font-body" / "font-display"):
+//   body    Inter          — all UI, labels, tables, controls
+//   display Space Grotesk  — display/hero type only (type-display-*)
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
 
 export const metadata = {
-  title: "Tally — Financial OS for Shopify",
+  title: "Carter",
   description:
-    "The financial operating system for Shopify brands. True SKU-level profit, ad-spend intelligence, and an AI that connects margin, ads, supply, and cash.",
+    "Carter — the B2B commerce platform. True SKU-level profit, ad-spend intelligence, and an AI that connects margin, ads, supply, and cash.",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       {/* suppressHydrationWarning: browser extensions (Grammarly et al.) inject
           attributes into <body> before React hydrates, triggering a noisy but
           harmless mismatch warning. Scoped to this element only — real

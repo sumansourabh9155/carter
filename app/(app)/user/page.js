@@ -17,11 +17,11 @@ const FIELDS = [
 export default function UserPage() {
   return (
     <PageContainer>
-      <PageHeader eyebrow="Account" title="User" description="Your profile and how Tally identifies you." />
+      <PageHeader eyebrow="Account" title="User" description="Your profile and how Carter identifies you." />
       <Card className="p-6">
         <div className="flex items-center gap-4">
           <Avatar className="size-14">
-            <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-700 text-lg text-white">MA</AvatarFallback>
+            <AvatarFallback className="bg-[image:var(--gradient-primary-button)] text-lg text-white">MA</AvatarFallback>
           </Avatar>
           <div>
             <div className="flex items-center gap-2">

@@ -43,7 +43,7 @@ export function MarginWaterfall({ data, height = 220 }) {
                 </div>
               )}
               <div
-                className={cn("absolute inset-x-0 rounded-[3px]", s.marker && "ring-1 ring-black/10")}
+                className={cn("absolute inset-x-0 rounded-[3px]", s.marker && "ring-1 ring-border")}
                 style={{ top: topPx, height: Math.max(2, hPx), background: s.fill }}
                 title={`${s.name}: ${money(s.value)}`}
               />
