@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
-import { ChevronLeft, Sparkles, PackageSearch } from "lucide-react";
+import { ChevronLeft, Sparkles } from "lucide-react";
 import { getProduct } from "@/lib/api";
 import { useAsync } from "@/lib/useAsync";
 import { useAIPanel } from "@/context/AIPanelContext";
@@ -14,7 +14,6 @@ import { KpiCard } from "@/components/ui/KpiCard";
 import { ChartCard } from "@/components/ChartCard";
 import { MarginWaterfall } from "@/components/charts/MarginWaterfall";
 import { RankBars } from "@/components/charts/RankBars";
-import { Sparkline } from "@/components/ui/Sparkline";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeading } from "@/components/ui/card";

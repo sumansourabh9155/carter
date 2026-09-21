@@ -29,7 +29,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogPrimitive } from "@/components/ui/dialog";
 import { money, pct, signedMoney, multiple, plural } from "@/lib/format";
-import { fmtRange, untilText, timeAgo } from "@/lib/time";
+import { untilText, timeAgo } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
 /*

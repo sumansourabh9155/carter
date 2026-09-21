@@ -35,15 +35,12 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
-  Clock,
   Cookie,
   EyeOff,
   FlaskConical,
   Gauge,
   Landmark,
   MinusCircle,
-  Repeat,
-  ShieldCheck,
   Sparkles,
   Store,
   Target,
@@ -56,6 +53,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { getMarketing, getExperiments, getBudgetPlan, getCreatives, getMetrics } from "@/lib/api";
 import { useAsync } from "@/lib/useAsync";
+import { Button } from "@/components/ui/button";
 import { money, multiple, pct } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -495,97 +493,7 @@ function WhyNowSlide() {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 6 — Business model                                               */
-/* ---------------------------------------------------------------------- */
-
-/*
-  Priced against MEDIA UNDER MANAGEMENT, not store GMV.
-
-  The old deck charged $49/mo on a GMV band — a price set for a Shopify
-  founder buying a profit dashboard. The buyer here runs a media budget in the
-  millions and is being asked to trust the number they report upward. The
-  value scales with the spend being measured, so the price does too, and an
-  incrementality programme is a service line rather than a feature toggle.
-*/
-const BM_TIERS = [
-  {
-    tier: "Measure",
-    price: "$2.5k",
-    band: "up to $500k/mo media",
-    unlocks: ["Margin-true CM-ROAS per SKU, category and channel", "Pacing, projections and the action board", "Stated attribution window and audit trail"],
-  },
-  {
-    tier: "Optimise",
-    price: "$6k",
-    band: "$500k–$2M/mo media",
-    featured: true,
-    unlocks: ["+ Budget allocation under diminishing returns", "+ Creative fatigue tied to margin", "+ Executed actions with undo and forecast scoring"],
-  },
-  {
-    tier: "Prove",
-    price: "$12k+",
-    band: "$2M+/mo media",
-    unlocks: ["+ Incrementality programme — geo and PSA holdouts", "+ Measured paid share fed back into the model", "+ Approval workflow and finance-ready reporting"],
-  },
-];
-
-const UNIT_ECON = [
-  { icon: Repeat, label: "Priced on", value: "Media under management", sub: "value scales with the spend being measured" },
-  { icon: TrendingUp, label: "Expansion path", value: "Measure → Optimise → Prove", sub: "coverage grows as more of the budget gets tested" },
-  { icon: ShieldCheck, label: "Why it sticks", value: "The test history", sub: "switching means starting the evidence base again" },
-  { icon: Clock, label: "Time to first finding", value: "Days, not a quarter", sub: "the margin correction lands before any test finishes" },
-];
-
-function BusinessModelSlide() {
-  return (
-    <div className="flex h-full flex-col justify-center">
-      <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Business model</p>
-      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
-        Priced against the spend we measure, not the store size.
-      </h2>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        A monthly platform fee banded by media under management. The buyer is defending a budget, so the price sits
-        against the budget — and the incrementality tier is a programme, because running holdouts properly is work.
-      </p>
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        {BM_TIERS.map((t) => (
-          <div key={t.tier} className={cn("rounded-card border p-4 shadow-card", t.featured ? "border-primary/40 bg-primary/[0.05]" : "border-border bg-card")}>
-            <div className="flex items-baseline justify-between">
-              <span className="text-sm font-semibold">{t.tier}</span>
-              <span className="tabular text-lg font-semibold text-primary">
-                {t.price}<span className="text-xs font-normal text-muted-foreground">/mo</span>
-              </span>
-            </div>
-            <div className="text-[11px] text-muted-foreground">{t.band}</div>
-            <ul className="mt-2 space-y-1">
-              {t.unlocks.map((u) => (
-                <li key={u} className="flex items-start gap-1.5 text-[11px] leading-relaxed text-foreground/80">
-                  <CheckCircle2 className="mt-0.5 size-3 shrink-0 text-success" /> {u}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-4">
-        {UNIT_ECON.map((m) => (
-          <div key={m.label} className="rounded-card bg-card p-3 shadow-ring">
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              <m.icon className="size-3.5 text-primary" /> {m.label}
-            </div>
-            <div className="mt-1 text-[13px] font-semibold leading-tight">{m.value}</div>
-            <div className="mt-0.5 text-[10px] leading-tight text-muted-foreground">{m.sub}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ---------------------------------------------------------------------- */
-/* Slide 7 — Go to market                                                 */
+/* Slide 6 — Go to market                                                 */
 /* ---------------------------------------------------------------------- */
 
 const GTM = [
@@ -607,6 +515,8 @@ const GTM = [
 ];
 
 function GoToMarketSlide() {
+  const { mkt, exp } = useDeckData();
+  const gap = exp?.gap?.rows?.[0];
   return (
     <div className="flex h-full flex-col justify-center">
       <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Go-to-market</p>
@@ -622,8 +532,9 @@ function GoToMarketSlide() {
         <div className="flex-1 rounded-card border border-primary/30 bg-primary/[0.05] px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-wide text-primary">Land</div>
           <div className="mt-0.5 text-sm text-foreground/90">
-            The attribution audit. &ldquo;Your 2.3× is 1.15× after COGS, and 0.59× incremental on the one channel we
-            tested.&rdquo;
+            The attribution audit. &ldquo;Your {multiple(mkt?.totals?.platformRoas)} is{" "}
+            {multiple(mkt?.totals?.cmRoas)} after COGS, and {multiple(gap?.incrementalCmRoas)}{" "}
+            incremental on the one channel we tested.&rdquo;
           </div>
         </div>
         <ArrowRight className="mx-auto size-5 shrink-0 rotate-90 text-muted-foreground sm:rotate-0" />
@@ -658,7 +569,7 @@ function GoToMarketSlide() {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 8 — Before / after + the ask                                     */
+/* Slide 7 — Before / after + the ask                                     */
 /* ---------------------------------------------------------------------- */
 
 const BEFORE = [
@@ -751,7 +662,6 @@ const SLIDES = [
   { id: "product", Comp: ProductSlide },
   { id: "moat", Comp: MoatSlide },
   { id: "why-now", Comp: WhyNowSlide },
-  { id: "business-model", Comp: BusinessModelSlide },
   { id: "go-to-market", Comp: GoToMarketSlide },
   { id: "before-after", Comp: BeforeAfterSlide },
 ];
@@ -789,39 +699,68 @@ export default function PresentationPage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between border-t border-border px-6 py-3">
-        <button
+      {/*
+        THE CONTROLS — deliberately weighty.
+
+        These were ghost buttons in muted-foreground: 13px grey text on a
+        white bar, sitting in the two corners a presenter never looks at.
+        Advancing a slide is the single most-used action on this screen and it
+        was the least visible thing on it.
+
+        Now they use the design system's real button treatment rather than a
+        hand-rolled one: Next is the PRIMARY gradient because forward is the
+        dominant direction in a deck, Prev is the outlined secondary, and both
+        are `lg` (48px) so they are reachable without aiming. Disabled still
+        reads as disabled — the button component's opacity-40 — instead of
+        fading to invisible at opacity-30.
+      */}
+      <div className="flex items-center justify-between gap-4 border-t border-border bg-card px-6 py-4">
+        <Button
+          variant="outline"
+          size="lg"
           onClick={() => go(-1)}
           disabled={index === 0}
-          className="inline-flex items-center gap-1 rounded-input px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-ia-gray hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+          className="min-w-[124px] justify-center"
         >
-          <ChevronLeft className="size-4" /> Prev
-        </button>
+          <ChevronLeft /> Prev
+        </Button>
 
-        <div className="flex items-center gap-2">
-          {SLIDES.map((s, i) => (
-            <button
-              key={s.id}
-              onClick={() => setIndex(i)}
-              aria-label={`Go to slide ${i + 1}`}
-              className={cn(
-                "h-1.5 rounded-full transition-all",
-                i === index ? "w-6 bg-primary" : "w-1.5 bg-border hover:bg-muted-foreground/40"
-              )}
-            />
-          ))}
-          <span className="tabular ml-2 text-xs text-muted-foreground">
+        <div className="flex min-w-0 flex-col items-center gap-2">
+          <div className="flex items-center gap-2">
+            {SLIDES.map((s, i) => (
+              <button
+                key={s.id}
+                onClick={() => setIndex(i)}
+                aria-label={`Go to slide ${i + 1}`}
+                aria-current={i === index ? "true" : undefined}
+                className={cn(
+                  // Taller and wider than before so the dots are a usable
+                  // control in their own right, not just an indicator.
+                  "h-2 rounded-full transition-all",
+                  i === index
+                    ? "w-8 bg-[image:var(--gradient-primary-button)]"
+                    : "w-2 bg-border hover:w-4 hover:bg-muted-foreground/50"
+                )}
+              />
+            ))}
+          </div>
+          <span className="tabular text-[12px] font-medium text-muted-foreground">
             {index + 1} / {SLIDES.length}
+            {/* The deck has always been arrow-key navigable and never said so. */}
+            <span className="ml-2 hidden font-normal text-muted-foreground/70 sm:inline">
+              · ← → to navigate
+            </span>
           </span>
         </div>
 
-        <button
+        <Button
+          size="lg"
           onClick={() => go(1)}
           disabled={index === SLIDES.length - 1}
-          className="inline-flex items-center gap-1 rounded-input px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-ia-gray hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
+          className="min-w-[124px] justify-center"
         >
-          Next <ChevronRight className="size-4" />
-        </button>
+          Next <ChevronRight />
+        </Button>
       </div>
     </div>
   );

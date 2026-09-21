@@ -14,7 +14,6 @@ import { FunnelSteps } from "@/components/charts/FunnelSteps";
 import { LinesChart } from "@/components/charts/LinesChart";
 import { CompareBars } from "@/components/charts/CompareBars";
 import { AudienceBreakdown } from "@/components/charts/AudienceBreakdown";
-import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "carter-chat-v1";
 

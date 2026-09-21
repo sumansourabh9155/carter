@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ProductThumb } from "@/components/ProductThumb";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { FIELD_GROUPS, fieldFilled } from "@/lib/dataFields";
 import { cn } from "@/lib/utils";
 

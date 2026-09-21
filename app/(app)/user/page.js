@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const FIELDS = [
-  { label: "Name", value: "Maya Alvarez" },
-  { label: "Email", value: "maya@coastalactive.com" },
+  { label: "Name", value: "Suman Sourabh" },
+  { label: "Email", value: "suman@coastalactive.com" },
   { label: "Role", value: "Owner" },
-  { label: "Store", value: "Coastal Active · Shopify Growth" },
+  { label: "Brand", value: "Coastal Active" },
+  { label: "Media under management", value: "$44,500 / month" },
   { label: "Timezone", value: "America/Los_Angeles" },
 ];
 
@@ -21,14 +22,14 @@ export default function UserPage() {
       <Card className="p-6">
         <div className="flex items-center gap-4">
           <Avatar className="size-14">
-            <AvatarFallback className="bg-[image:var(--gradient-primary-button)] text-lg text-white">MA</AvatarFallback>
+            <AvatarFallback className="bg-[image:var(--gradient-primary-button)] text-lg text-white">SS</AvatarFallback>
           </Avatar>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-semibold">Maya Alvarez</h2>
-              <Badge variant="success">Owner</Badge>
+              <h2 className="text-lg font-semibold">Suman Sourabh</h2>
+              <Badge variant="positive">Owner</Badge>
             </div>
-            <p className="text-sm text-muted-foreground">maya@coastalactive.com</p>
+            <p className="text-sm text-muted-foreground">suman@coastalactive.com</p>
           </div>
           <Button variant="outline" className="ml-auto">Edit profile</Button>
         </div>

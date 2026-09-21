@@ -1,7 +1,7 @@
 "use client";
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend } from "recharts";
-import { GRID_PROPS, AXIS_PROPS, YAXIS_MULT, ChartTooltip, CHART_COLORS } from "@/lib/chartTheme";
+import { GRID_PROPS, AXIS_PROPS, YAXIS_MULT, ChartTooltip } from "@/lib/chartTheme";
 
 // Channel identity colors — MUST match lib/data/adChannels.js exactly, so a
 // channel wears the same hue on every surface (color follows the entity).

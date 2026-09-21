@@ -51,7 +51,8 @@ export function TopBar({ signals = {} }) {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-2 bg-brand-900 px-4">
       {/* Brand cluster */}
-      <Link href="/insights" className="flex shrink-0 items-center gap-2">
+      {/* The wordmark goes home, and home is the landing route — Products. */}
+      <Link href="/products" className="flex shrink-0 items-center gap-2">
         <CarterMark />
         <span className="h-4 w-px shrink-0 rounded-full bg-brand-700" />
         <span className="text-[20px] font-semibold leading-7 text-white">Carter</span>
@@ -102,12 +103,12 @@ export function TopBar({ signals = {} }) {
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-1 rounded-nav p-1 outline-none transition-colors hover:bg-white/10">
             <Avatar className="size-6">
-              <AvatarFallback className="bg-white/15 text-[10px] font-semibold text-white">MA</AvatarFallback>
+              <AvatarFallback className="bg-white/15 text-[10px] font-semibold text-white">SS</AvatarFallback>
             </Avatar>
             <ChevronDown className="size-3.5 text-brand-200/80" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Maya · Owner</DropdownMenuLabel>
+            <DropdownMenuLabel>Suman Sourabh · Owner</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/user"><User /> Profile</Link>
