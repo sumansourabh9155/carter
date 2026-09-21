@@ -6,6 +6,7 @@ import { Database, Bell, Mail, ArrowRight } from "lucide-react";
 import { getProducts } from "@/lib/api";
 import { useAsync } from "@/lib/useAsync";
 import { PageHeader, PageContainer } from "@/components/PageHeader";
+import { AutonomyPanel } from "@/components/actions/AutonomyPanel";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,14 @@ export default function SettingsPage() {
 
   return (
     <PageContainer>
-      <PageHeader eyebrow="Configuration" title="Settings" description="Cost data, alert thresholds, and notifications." />
+      <PageHeader
+        eyebrow="Configuration"
+        title="Settings"
+        description="What Carter may act on by itself, cost data, alert thresholds, and notifications."
+      />
+
+      {/* Autonomy first: it governs everything the rest of the app can do. */}
+      <AutonomyPanel />
 
       {/* COGS coverage — load-bearing for trustworthy margins */}
       <Card className="p-5">
@@ -63,7 +71,6 @@ export default function SettingsPage() {
         <Separator />
         <Row title="Ad overspend" desc="Notify when a campaign paces over budget below break-even CM-ROAS." control={<Switch checked={overspend} onCheckedChange={setOverspend} />} />
         <Separator />
-        <Row title="Cash runway floor" desc="Needs the cash engine — available in Phase 2." control={<Badge variant="outline">Phase 2</Badge>} />
       </Card>
 
       {/* Notifications */}

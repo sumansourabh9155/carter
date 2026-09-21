@@ -7,25 +7,8 @@ import { TopBar } from "@/components/shell/TopBar";
 import { AIPanel } from "@/components/ai/AIPanel";
 import { getLosingHero, getDataReadiness, getInsightsBoard } from "@/lib/api";
 
-// Quiet authorship credit — fixed bottom-right, low-key by default, clearer on
-// hover. pointer-events sit only on the pill so it never blocks the page.
-function MadeByBadge() {
-  return (
-    <div className="pointer-events-none fixed bottom-3 right-4 z-40 select-none">
-      <div className="pointer-events-auto flex items-center gap-2 rounded-full shadow-ring bg-card px-3 py-1.5 text-[11px] opacity-95 backdrop-blur-sm transition-opacity hover:opacity-100">
-        <span className="size-1.5 shrink-0 rounded-full bg-[image:var(--gradient-primary-button)]" />
-        <span className="text-muted-foreground">
-          Built by <span className="font-semibold text-foreground">Suman Sourabh</span> &amp; <span className="font-semibold text-foreground">Kanhaiya Kumar</span>
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export function AppShell({ children }) {
   const pathname = usePathname();
-  // Keep the pitch deck pristine — no floating credit over the slide controls.
-  const showCredit = !pathname.startsWith("/presentation");
   const [signals, setSignals] = useState({ productsAlert: false, alertsCount: 0, dataIncomplete: false });
 
   useEffect(() => {
@@ -59,7 +42,6 @@ export function AppShell({ children }) {
         <main className="min-w-0 flex-1">{children}</main>
       </div>
       <AIPanel />
-      {showCredit && <MadeByBadge />}
     </div>
   );
 }

@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Sparkles, ChevronDown, User, Settings, LogOut, Search } from "lucide-react";
-import { useDateRange, RANGES } from "@/context/DateRangeContext";
+import { Bell, Sparkles, ChevronDown, User, Settings, LogOut } from "lucide-react";
 import { useAIPanel } from "@/context/AIPanelContext";
 import { getSyncHealth } from "@/lib/connectors";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -15,10 +14,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { GlobalSearch } from "@/components/shell/GlobalSearch";
 import { cn } from "@/lib/utils";
 
-// Routes where a reporting period makes no sense.
-const NO_RANGE = ["/settings", "/integrations", "/user", "/carter-ai", "/presentation"];
 // The pitch deck isn't "this store's data" — the merchant identity and sync
 // status are meaningless noise sitting on top of an investor slide.
 const NO_STORE_CHROME = ["/presentation"];
@@ -47,9 +45,7 @@ function CarterMark() {
 
 export function TopBar({ signals = {} }) {
   const pathname = usePathname();
-  const { range, setRange } = useDateRange();
   const { openPanel } = useAIPanel();
-  const showRange = !NO_RANGE.some((p) => pathname.startsWith(p));
   const showStoreChrome = !NO_STORE_CHROME.some((p) => pathname.startsWith(p));
 
   return (
@@ -61,37 +57,11 @@ export function TopBar({ signals = {} }) {
         <span className="text-[20px] font-semibold leading-7 text-white">Carter</span>
       </Link>
 
-      {/* Global search — presentational for now; mirrors the platform bar. */}
-      <div className="ml-4 hidden h-8 min-w-0 max-w-[520px] flex-1 items-center gap-2 rounded-nav bg-brand-800 px-2.5 lg:flex">
-        <Search className="size-3.5 shrink-0 text-brand-200/70" />
-        <input
-          type="search"
-          aria-label="Search Carter"
-          placeholder="Search products, campaigns, channels"
-          className="min-w-0 flex-1 bg-transparent text-[12px] leading-4 text-white outline-none placeholder:text-brand-200/60"
-        />
-      </div>
+      <GlobalSearch />
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
         {showStoreChrome && (
           <span className="hidden text-[12px] leading-4 text-brand-200/80 xl:inline">Coastal Active</span>
-        )}
-
-        {showRange && (
-          <div className="flex items-center gap-0.5 rounded-nav bg-brand-800 p-0.5">
-            {RANGES.map((r) => (
-              <button
-                key={r.id}
-                onClick={() => setRange(r.id)}
-                className={cn(
-                  "rounded-button px-2 py-1 text-[11px] font-semibold leading-[14px] transition-colors",
-                  range === r.id ? "bg-white/15 text-white" : "text-brand-200/70 hover:text-white"
-                )}
-              >
-                {r.label}
-              </button>
-            ))}
-          </div>
         )}
 
         {showStoreChrome && (() => {

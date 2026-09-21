@@ -17,9 +17,9 @@ import { RankBars } from "@/components/charts/RankBars";
 import { Sparkline } from "@/components/ui/Sparkline";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { Card, CardHeading } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { money, pct, multiple, signed } from "@/lib/format";
+import { money, pct, multiple, signed, signedMoney, signedMultiple } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 const SPLIT_COLORS = ["#2238b0", "#0277bd", "#7b1fa2", "#7b1fa2", "#2e7d32"];
@@ -52,8 +52,6 @@ function buildWaterfall(p) {
     { name: "CM1", value: p.cm1, fill: "#0277bd", marker: true },
     { name: "− Ad spend", value: -p.adSpend, fill: "#ef6c00" },
     { name: "CM2", value: p.cm2, fill: "#7b1fa2", marker: true },
-    { name: "− Overhead", value: -p.overheadAlloc, fill: "#e4eaed" },
-    { name: "CM3", value: p.cm3, fill: "#2e7d32", marker: true },
   ];
 }
 
@@ -76,10 +74,14 @@ export default function ProductDetailPage() {
   }
 
   const meta = QUADRANT_META[p.quadrant];
-  const takeaway = p.losingMoney
-    ? `After ad spend, ${p.name} loses ${money(Math.abs(p.cm2PerOrder), { decimals: 2 })} per order. Cut its ads or raise price to clear break-even.`
-    : `${p.name} earns ${money(p.cm2PerOrder, { decimals: 2 })} per order after ads — a ${meta.label.toLowerCase()} worth ${p.quadrant === "hero" ? "scaling" : "holding"}.`;
-  const prompt = p.losingMoney ? `Why does ${p.name} lose money?` : `Should I scale ads on ${p.name}?`;
+  // Two sentences because there are two verdicts: what the SKU contributes,
+  // and whether its MEDIA pays. A product can be a strong contributor whose
+  // ad spend is still destroying value, and collapsing that into one line is
+  // how the old copy called four such SKUs healthy.
+  const takeaway = p.mediaLosing
+    ? `Its ads are underwater: ${money(p.adSpend)} of spend against ${money(p.paidCm1)} of attributed CM1 — ${money(p.mediaCm2)} on the media at ${multiple(p.cmRoas)} CM-ROAS. The SKU itself still contributes ${money(p.cm2)} CM2, so this is a budget decision, not a product one.`
+    : `${p.name} earns ${money(p.cm2PerUnit, { decimals: 2 })} of CM2 per unit and its media returns ${multiple(p.cmRoas)} — a ${meta.label.toLowerCase()} worth ${p.quadrant === "hero" ? "scaling" : "holding"}.`;
+  const prompt = p.mediaLosing ? `Why are the ads on ${p.name} losing money?` : `Should I scale ads on ${p.name}?`;
 
   const cp = p.channelPerformance;
   let channelTakeaway = null;
@@ -118,14 +120,79 @@ export default function ProductDetailPage() {
         </Button>
       </div>
 
+      {/* Levels with their movement. "CM2 is $17,245" is a fact; "CM2 is
+          $17,245, up $2,042" is the beginning of a decision. */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard label="CM1" value={p.cm1} sub={pct(p.cm1Pct)} verdict />
-        <KpiCard label="CM2 (after ads)" value={p.cm2} sub={pct(p.cm2Pct)} verdict />
-        <KpiCard label="CM3 (net)" value={p.cm3} sub={pct(p.cm3Pct)} verdict />
-        <KpiCard label="CM-ROAS" value={p.cmRoas} unit="mult" sub={`${multiple(p.revRoas)} revenue ROAS`} />
+        <KpiCard
+          label="CM1" value={p.cm1} sub={pct(p.cm1Pct)} verdict
+          delta={p.delta?.cm1.pct} deltaNote={p.delta ? "vs prior 30d" : undefined}
+        />
+        <KpiCard
+          label="CM2 (after ads)" value={p.cm2} sub={pct(p.cm2Pct)} verdict
+          delta={p.delta?.cm2.pct} deltaNote={p.delta ? "vs prior 30d" : undefined}
+        />
+        <KpiCard
+          label="CM-ROAS" value={p.cmRoas} unit="mult" sub={`${multiple(p.revRoas)} revenue ROAS`}
+          verdict breakEven={1} verdictLabels={{ good: "Ads pay", bad: "Ads underwater" }}
+          deltaText={p.delta?.cmRoas.abs != null ? signedMultiple(p.delta.cmRoas.abs).text : undefined}
+          deltaDir={p.delta?.cmRoas.dir}
+          deltaNote={p.delta ? "vs prior 30d" : undefined}
+        />
+        <KpiCard
+          label="Ad spend" value={p.adSpend} sub={`${p.units.toLocaleString()} units sold`}
+          delta={p.delta?.adSpend.pct} deltaNote={p.delta ? "vs prior 30d" : undefined} deltaInverse
+        />
       </div>
 
-      <ChartCard title="Where this SKU's money goes" subtitle={`${p.units.toLocaleString()} units · ${money(p.revenue)} revenue`}>
+      {/* WHAT CHANGED — the question a media team opens a SKU to answer.
+          Both periods run through the same margin engine, so the prior
+          column can never disagree with the current one. */}
+      {p.prev && (
+        <Card className="overflow-hidden p-0">
+          <CardHeading
+            title="This period vs. last"
+            description="Same engine, same unit economics — only the period's own raw inputs differ."
+          />
+          <div className="grid grid-cols-4 gap-3 border-t border-border bg-[#f8fafb] px-6 py-2.5 text-[12px] font-semibold leading-4 text-[#7d929e]">
+            <span>Metric</span>
+            <span className="text-right">Prior 30d</span>
+            <span className="text-right">This period</span>
+            <span className="text-right">Change</span>
+          </div>
+          {[
+            { label: "Revenue", now: money(p.revenue), was: money(p.prev.revenue), d: signedMoney(p.delta.revenue.abs), pctText: p.delta.revenue.pct },
+            { label: "Ad spend", now: money(p.adSpend), was: money(p.prev.adSpend), d: signedMoney(p.delta.adSpend.abs), pctText: p.delta.adSpend.pct, inverse: true },
+            { label: "CM1", now: money(p.cm1), was: money(p.prev.cm1), d: signedMoney(p.delta.cm1.abs), pctText: p.delta.cm1.pct },
+            { label: "CM2", now: money(p.cm2), was: money(p.prev.cm2), d: signedMoney(p.delta.cm2.abs), pctText: p.delta.cm2.pct },
+            { label: "CM-ROAS", now: multiple(p.cmRoas), was: multiple(p.prev.cmRoas), d: signedMultiple(p.delta.cmRoas.abs) },
+          ].map((r) => (
+            <div key={r.label} className="grid grid-cols-4 items-center gap-3 border-t border-border-subtle px-6 py-2.5">
+              <span className="text-[13px] font-medium">{r.label}</span>
+              <span className="tabular text-right text-[13px] text-muted-foreground">{r.was}</span>
+              <span className="tabular text-right text-[13px] font-medium">{r.now}</span>
+              <span className="text-right">
+                {/* Rising ad spend is not "good" the way rising margin is —
+                    the cost rows read their colour inverted. */}
+                <span className={cn(
+                  "tabular text-[13px] font-semibold",
+                  r.d.dir === "flat" && "text-muted-foreground",
+                  r.d.dir !== "flat" && ((r.d.dir === "up") !== Boolean(r.inverse) ? "text-ia-positive" : "text-ia-negative")
+                )}>
+                  {r.d.text}
+                </span>
+                {r.pctText != null && (
+                  <span className="tabular ml-1.5 text-[11px] text-muted-foreground">{signed(r.pctText).text}</span>
+                )}
+              </span>
+            </div>
+          ))}
+        </Card>
+      )}
+
+      <ChartCard
+        title="Where this SKU's money goes"
+        subtitle={`${p.units.toLocaleString()} units · ${money(p.revenue)} revenue · ads are credited with ${pct(p.paidSharePct)} of it`}
+      >
         <MarginWaterfall data={buildWaterfall(p)} height={240} />
         <p className="mt-4 rounded-input shadow-ring bg-ia-gray-faded px-4 py-3 text-sm text-foreground/90">{takeaway}</p>
       </ChartCard>
@@ -227,60 +294,6 @@ export default function ProductDetailPage() {
           </div>
         </ChartCard>
       )}
-
-      <ChartCard
-        title="Demand & supply"
-        subtitle="Projected from recent sales trend — a directional estimate, not a guarantee"
-        action={p.supplyEstimated && <Badge variant="warning">Estimated</Badge>}
-      >
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div className="text-xs text-muted-foreground">Recent demand trend</div>
-            <div className="mt-1 flex items-center gap-2">
-              <Sparkline data={p.spark} color={p.trendPct < 0 ? "#d32f2f" : "#2238b0"} />
-              <span className={cn("tabular text-sm font-medium", signed(p.trendPct).dir === "up" ? "text-success" : signed(p.trendPct).dir === "down" ? "text-destructive" : "text-muted-foreground")}>
-                {signed(p.trendPct).text}
-              </span>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-xs text-muted-foreground">Days until stockout</div>
-            <div className={cn("tabular mt-1 text-2xl font-semibold", p.stockoutRisk ? "text-destructive" : p.needsReorderNow && "text-warning")}>
-              {p.projectedDaysToStockout ?? "—"}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-input shadow-ring p-3">
-            <div className="text-xs text-muted-foreground">On hand</div>
-            <div className="tabular mt-0.5 text-sm font-semibold">{p.onHand?.toLocaleString() ?? "—"} units</div>
-          </div>
-          <div className="rounded-input shadow-ring p-3">
-            <div className="text-xs text-muted-foreground">Reorder point</div>
-            <div className="tabular mt-0.5 text-sm font-semibold">{p.reorderPointUnits?.toLocaleString() ?? "—"} units</div>
-          </div>
-          <div className="rounded-input shadow-ring p-3">
-            <div className="text-xs text-muted-foreground">Lead time used</div>
-            <div className="tabular mt-0.5 text-sm font-semibold">{p.leadTimeDaysUsed} days</div>
-          </div>
-        </div>
-
-        <div className={cn(
-          "mt-4 flex items-start gap-3 rounded-input border p-3.5",
-          p.stockoutRisk ? "border-destructive/25 bg-destructive/[0.04]" : p.needsReorderNow ? "border-warning/25 bg-warning/[0.04]" : "border-success/25 bg-success/[0.04]"
-        )}>
-          <PackageSearch className={cn("mt-0.5 size-4 shrink-0", p.stockoutRisk ? "text-destructive" : p.needsReorderNow ? "text-warning" : "text-success")} />
-          <p className="text-sm">
-            {p.stockoutRisk
-              ? <>Order <span className="tabular font-semibold">~{p.suggestedReorderQty?.toLocaleString()} units</span> today — at the current pace this sells out in {p.projectedDaysToStockout} days, sooner than a {p.leadTimeDaysUsed}-day reorder can land. Expedite if possible.</>
-              : p.needsReorderNow
-              ? <>Time to place a routine reorder — <span className="tabular font-semibold">~{p.suggestedReorderQty?.toLocaleString()} units</span> would cover the next {p.leadTimeDaysUsed + 30} days. No rush, but don't let it slide.</>
-              : <>Covered for {p.projectedDaysToStockout} more days at the current pace — no reorder needed yet.</>}
-            {p.supplyEstimated && <span className="mt-1 block text-xs text-muted-foreground">Using a default lead time / safety stock buffer — add {p.supplier ? `${p.supplier}'s` : "the supplier's"} real numbers on Data Collection for a sharper estimate.</span>}
-          </p>
-        </div>
-      </ChartCard>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="p-4">

@@ -64,7 +64,7 @@ function ReadinessPanel({ readiness }) {
             <div className="h-full rounded-full bg-[image:var(--gradient-primary-button)]" style={{ width: `${readiness.pct}%` }} />
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            More complete data = more accurate margins, forecasts, and suggestions.
+            More complete cost data = truer CM-ROAS on every campaign.
           </p>
         </div>
         <div className="grid gap-2.5 sm:grid-cols-2">
@@ -98,7 +98,7 @@ function ImportDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Import cost data</DialogTitle>
-          <DialogDescription>Bulk-fill manufacturing, delivery, and supplier data from a spreadsheet.</DialogDescription>
+          <DialogDescription>Bulk-fill manufacturing, delivery and packaging costs from a spreadsheet.</DialogDescription>
         </DialogHeader>
         {done ? (
           <div className="flex items-center gap-3 rounded-input border border-success/30 bg-success/[0.06] p-4 text-sm">
@@ -108,7 +108,7 @@ function ImportDialog() {
           <div className="space-y-3 text-sm">
             <p className="text-muted-foreground">Expected columns (SKU is the match key):</p>
             <code className="block overflow-x-auto rounded-input shadow-ring bg-surface-subtle px-3 py-2 text-xs text-foreground/80">
-              sku, manufacturing_cost, delivery_cost, packaging_cost, lead_time_days, moq, supplier, payment_terms
+              sku, manufacturing_cost, delivery_cost, packaging_cost, duties_pct
             </code>
             <textarea
               rows={4}
@@ -175,7 +175,6 @@ export function CostInputs() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead>Product</TableHead>
-                <TableHead className="text-right"><ShopifyHead>On-hand</ShopifyHead></TableHead>
                 <TableHead className="text-right"><ShopifyHead>Units</ShopifyHead></TableHead>
                 <TableHead>Mfg $/unit</TableHead>
                 <TableHead>Delivery $/unit</TableHead>
@@ -195,15 +194,10 @@ export function CostInputs() {
                         <div className="flex items-center gap-1.5">
                           <span className="truncate text-sm font-medium">{raw.name}</span>
                           {d.estimated && <Badge variant="warning">Est. cost</Badge>}
-                          {d.stockoutRisk && <Badge variant="destructive">Stockout risk</Badge>}
                         </div>
                         <div className="text-[11px] text-muted-foreground">{raw.sku}</div>
                       </div>
                     </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <span className="tabular text-sm">{raw.onHand?.toLocaleString() ?? "—"}</span>
-                    {d.daysOfCover != null && <div className="text-[10px] text-muted-foreground">{d.daysOfCover}d cover</div>}
                   </TableCell>
                   <TableCell className="text-right tabular text-sm">{raw.units.toLocaleString()}</TableCell>
                   <TableCell><InlineNum value={raw.manufacturingCost} estimated={d.estimated} onCommit={(v) => patchRow(raw.id, { manufacturingCost: v, costSource: "real" })} /></TableCell>

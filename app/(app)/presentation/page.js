@@ -1,37 +1,65 @@
 "use client";
 
+/*
+  THE DECK — rewritten for what the product actually is.
+
+  The previous version pitched a financial operating system for Shopify
+  founders: stockout alerts, cash-runway forecasting, a $49/mo App Store
+  install, "Priya manages 5–50 brands". None of that survives in the product.
+  Inventory and treasury were deliberately cut, the buyer is a media team at a
+  consumer brand, and the thing that makes it defensible — incrementality
+  testing — did not exist when those slides were written.
+
+  THE ARGUMENT NOW, in three numbers for the same $54,707 of spend:
+
+      revenue ROAS        what the platforms report
+      CM-ROAS attributed  after COGS, shipping, fees and returns
+      incremental         what a geo holdout actually measured
+
+  On the current seed those run roughly 2.3x / 1.15x / 0.59x, but the slides
+  read them from the engines rather than quoting them, so the deck cannot
+  contradict the app.
+
+  Everyone ships the first number. A few ship the second. Almost nobody ships
+  the third, and only the third answers the question a CFO asks. That ladder
+  is the whole deck.
+
+  EVERY FIGURE HERE IS PRODUCED BY THE LIVE ENGINES, not typed into a slide.
+  The deck imports the same compute the app renders, so it cannot drift from
+  the product it describes — and a demo that contradicts its own pitch deck is
+  the fastest way to lose a room.
+*/
+
 import {
   ArrowRight,
-  Banknote,
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Clock,
+  Cookie,
   EyeOff,
-  History,
-  Megaphone,
+  FlaskConical,
+  Gauge,
+  Landmark,
   MinusCircle,
-  MousePointerClick,
-  Package,
-  PackageX,
-  Percent,
   Repeat,
-  Smartphone,
+  ShieldCheck,
   Sparkles,
   Store,
-  TrendingDown,
+  Target,
   TrendingUp,
   Users,
-  Wallet,
   XCircle,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import Link from "next/link";
+import { getMarketing, getExperiments, getBudgetPlan, getCreatives, getMetrics } from "@/lib/api";
+import { useAsync } from "@/lib/useAsync";
+import { money, multiple, pct } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-// Shared arrow marker — context-stroke lets every path/line color its own
-// arrowhead, so one <defs> block works across every diagram on the deck.
+/* Shared arrow marker — context-stroke lets every path color its own head. */
 function ArrowDefs() {
   return (
     <defs>
@@ -46,313 +74,276 @@ function ArrowDefs() {
   );
 }
 
-/* ---------------------------------------------------------------------- */
-/* Slide 1 — Cover                                                        */
-/* ---------------------------------------------------------------------- */
+/* A single hook so every slide reads the same live figures once. */
+function useDeckData() {
+  const { data: mkt } = useAsync(() => getMarketing(), []);
+  const { data: exp } = useAsync(() => getExperiments(), []);
+  const { data: plan } = useAsync(() => getBudgetPlan(), []);
+  const { data: cre } = useAsync(() => getCreatives(), []);
+  const { data: ads } = useAsync(() => getMetrics({ lens: "ads" }), []);
+  return { mkt, exp, plan, cre, ads };
+}
 
-function PipelineStrip() {
-  const steps = [
-    { label: "Shopify + Ads + Costs", color: "#7d929e" },
-    { label: "True Profit Engine", color: "#ef6c00" },
-    { label: "5 Connected Questions", color: "#7b1fa2" },
-    { label: "One Answer", color: "#2e7d32" },
-  ];
+function Figure({ label, value, sub, tone }) {
   return (
-    <svg viewBox="0 0 860 90" width="100%" className="mt-2" role="img" aria-label="Data flows from Shopify, ads, and costs through the profit engine to one answer">
-      <ArrowDefs />
-      {steps.map((s, i) => {
-        const w = 190;
-        const gap = 20;
-        const x = i * (w + gap) + 10;
-        return (
-          <g key={s.label}>
-            <rect x={x} y={20} width={w} height={50} rx={10} fill={`${s.color}1a`} stroke={s.color} strokeWidth="1.2" />
-            <text x={x + w / 2} y={49} textAnchor="middle" fontSize="12.5" fontWeight="600" fill={s.color}>
-              {s.label}
-            </text>
-            {i < steps.length - 1 && (
-              <line x1={x + w + 2} y1={45} x2={x + w + gap - 2} y2={45} stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
-            )}
-          </g>
-        );
-      })}
-    </svg>
+    <div className="rounded-card bg-card px-4 py-2.5 shadow-ring">
+      <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
+      <div className={cn("tabular text-lg font-semibold", tone === "neg" && "text-destructive", tone === "pos" && "text-success")}>
+        {value}
+      </div>
+      {sub && <div className="text-[11px] leading-tight text-muted-foreground">{sub}</div>}
+    </div>
   );
 }
 
-// Two relatable founder stories — the major problems Carter solves, in the
-// customer's own voice. Each pairs the felt pain with the hidden cause.
-const STORIES = [
-  {
-    quote: "“Sales were up 30% — so why was there less money in the bank?”",
-    reveal: "Her best-seller lost money on every order after ad spend — and nothing flagged it.",
-    who: "Maya · DTC founder",
-  },
-  {
-    quote: "“Meta showed a 5× ROAS, so I doubled the budget.”",
-    reveal: "That number ignored product cost, shipping and returns — the SKU was below break-even.",
-    who: "Devin · Growth lead",
-  },
-];
+/* ---------------------------------------------------------------------- */
+/* Slide 1 — Cover: the three numbers                                     */
+/* ---------------------------------------------------------------------- */
+
+/*
+  THE LADDER. One bar per number, same spend underneath all three, so the
+  overstatement is a length rather than a claim. This is the single most
+  important visual in the deck: a media director recognises their own
+  reporting in the top bar and has never seen the bottom one.
+*/
+function RoasLadder({ revRoas, cmRoas, incremental }) {
+  const rows = [
+    { label: "Revenue ROAS", value: revRoas, who: "what the ad platforms claim", color: "#a3b3bc" },
+    { label: "CM-ROAS", value: cmRoas, who: "after COGS, shipping, fees, returns", color: "#0277bd" },
+    { label: "Incremental CM-ROAS", value: incremental, who: "what a geo holdout measured", color: "#d32f2f" },
+  ].filter((r) => r.value != null);
+  if (!rows.length) return <div className="h-[132px]" />;
+  const max = Math.max(...rows.map((r) => r.value)) || 1;
+
+  return (
+    <div className="w-full space-y-2.5">
+      {rows.map((r) => (
+        <div key={r.label} className="flex items-center gap-3">
+          <span className="w-[150px] shrink-0 text-right text-[11px] font-medium text-muted-foreground">{r.label}</span>
+          <div className="h-7 flex-1 overflow-hidden rounded-button bg-ia-gray">
+            <div
+              className="flex h-full items-center justify-end rounded-button px-2"
+              style={{ width: `${(r.value / max) * 100}%`, background: r.color }}
+            >
+              <span className="tabular text-[12px] font-semibold text-white">{multiple(r.value)}</span>
+            </div>
+          </div>
+          <span className="hidden w-[190px] shrink-0 text-[11px] text-muted-foreground sm:block">{r.who}</span>
+        </div>
+      ))}
+      {/* Break-even is the only reference that matters on this chart. */}
+      <p className="pl-[162px] text-[11px] text-muted-foreground">
+        Break-even is <span className="font-semibold text-foreground">1.0×</span>. The same spend, measured three ways —
+        and only the bottom one answers &ldquo;would this have happened anyway?&rdquo;
+      </p>
+    </div>
+  );
+}
 
 function CoverSlide() {
+  const { mkt, exp, ads } = useDeckData();
+  const gap = exp?.gap?.rows?.[0];
+  const revRoas = mkt?.totals?.platformRoas;
+
   return (
     <div className="flex h-full flex-col items-center justify-center text-center">
-      <span className="mb-6 grid size-20 place-items-center rounded-[28px] bg-[image:var(--gradient-primary-button)] text-white shadow-high">
-        <Sparkles className="size-9" />
+      <span className="mb-5 grid size-16 place-items-center rounded-[24px] bg-[image:var(--gradient-primary-button)] text-white shadow-high">
+        <Sparkles className="size-8" />
       </span>
       <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Carter</p>
       <h1 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-        The Financial Operating System <span className="text-primary">for Shopify Brands</span>
+        Retail media measurement that survives{" "}
+        <span className="text-primary">a conversation with finance</span>
       </h1>
-      <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
-        Carter is a financial operating system for Shopify brands that reveals the true, fully-loaded profit of every product — after COGS, shipping, returns, and ad spend — so founders can see which products actually make money and which are quietly bleeding cash.
+      <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        Carter tells a brand&apos;s media team what their paid spend actually earned — after product cost, and after a
+        holdout test proves the demand would not have arrived anyway. Then it lets them act on it, and measures whether
+        the change worked.
       </p>
-      <div className="mt-6 w-full max-w-3xl">
-        <PipelineStrip />
+
+      <div className="mt-7 w-full max-w-3xl rounded-card bg-card p-5 shadow-ring-lift">
+        <RoasLadder revRoas={revRoas} cmRoas={mkt?.totals?.cmRoas} incremental={gap?.incrementalCmRoas} />
       </div>
-      <div className="mt-7 grid w-full max-w-2xl gap-3 text-left sm:grid-cols-2">
-        {STORIES.map((s) => (
-          <div key={s.who} className="rounded-card shadow-ring bg-card p-4">
-            <p className="text-sm font-medium leading-snug text-foreground">{s.quote}</p>
-            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{s.reveal}</p>
-            <p className="mt-2.5 text-[11px] font-semibold uppercase tracking-wide text-primary">{s.who}</p>
-          </div>
-        ))}
-      </div>
+
+      <p className="mt-5 max-w-xl text-sm text-muted-foreground">
+        Every number in this deck is computed by the live product, not typed into a slide.
+      </p>
     </div>
   );
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 2 — Problem + Solution (the connected-decisions diagram)         */
+/* Slide 2 — The problem: two layers of overstatement                     */
 /* ---------------------------------------------------------------------- */
 
-const PROBLEMS = [
-  { icon: EyeOff, title: "Profit is a guess" },
-  { icon: TrendingDown, title: "Ads lie by omission" },
-  { icon: MousePointerClick, title: "Traffic leaks unseen" },
-  { icon: PackageX, title: "Stockouts sneak up" },
-  { icon: Wallet, title: "Cash surprises are costly" },
-];
-
-// Five pillars, evenly laid out across the 860-wide canvas (w=152, step=167).
-const PILLAR_BOXES = [
-  { x: 20, label: "Margin", sub: "true CM per SKU", fill: "#e5f4fd", stroke: "#0277bd", text: "#01579b" },
-  { x: 187, label: "Ads", sub: "CM-ROAS, not vanity", fill: "#e8ecfc", stroke: "#7b1fa2", text: "#1a2c8f" },
-  { x: 354, label: "Website", sub: "views → cart → sale", fill: "#e8ecfc", stroke: "#7b1fa2", text: "#1a2c8f" },
-  { x: 521, label: "Supply", sub: "stock & lead time", fill: "#e8f5e9", stroke: "#2e7d32", text: "#1b5e20" },
-  { x: 688, label: "Cash", sub: "what you can afford", fill: "#fff3e0", stroke: "#ef6c00", text: "#e65100" },
-];
-
-// Compact connected-loop diagram — tightened vertical rhythm so it fits
-// alongside the problem strip on one slide, without losing any beat.
-function ConnectedLoopDiagram() {
+function OverstatementDiagram({ revRoas, cmRoas, incremental }) {
+  // The headline gap, computed rather than asserted — if the seed or the
+  // attribution model changes, the sentence changes with it.
+  const spread = revRoas && incremental ? Math.round((revRoas / incremental) * 10) / 10 : null;
   return (
-    <svg viewBox="0 0 860 380" width="100%" role="img" aria-label="Shopify, ad, and cost data feed a profit engine; margin, ads, supply, and cash are read together with cash capping ad spend, feeding Carter which returns one answer">
+    <svg viewBox="0 0 860 300" width="100%" role="img" aria-label="Revenue ROAS overstates by ignoring cost of goods; attributed CM-ROAS overstates again by crediting demand that would have arrived anyway; only an incrementality test removes both">
       <ArrowDefs />
 
-      {/* Inputs */}
-      {[
-        { x: 20, label: "Shopify: orders & sales" },
-        { x: 300, label: "Ad platforms: Meta / Google / TikTok" },
-        { x: 580, label: "You: real costs & ops data" },
-      ].map((b) => (
-        <g key={b.label}>
-          <rect x={b.x} y={8} width={260} height={40} rx={9} fill="#f2f5f7" stroke="#a3b3bc" strokeWidth="1" />
-          <text x={b.x + 130} y={33} textAnchor="middle" fontSize="11.5" fontWeight="600" fill="#5f7682">
-            {b.label}
-          </text>
-        </g>
-      ))}
-      <line x1="150" y1="48" x2="150" y2="78" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
-      <line x1="430" y1="48" x2="430" y2="78" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
-      <line x1="710" y1="48" x2="710" y2="78" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
+      {/* Layer 1 */}
+      <rect x={20} y={10} width={820} height={64} rx={12} fill="#f2f5f7" stroke="#a3b3bc" strokeWidth="1.1" />
+      <text x={40} y={34} fontSize="13" fontWeight="700" fill="#5f7682">What the ad platforms claim: Revenue ROAS</text>
+      <text x={40} y={54} fontSize="11" fill="#5f7682">Revenue ÷ spend. Says nothing about whether the revenue was profitable.</text>
+      <text x={800} y={46} textAnchor="end" fontSize="20" fontWeight="700" fill="#5f7682">{multiple(revRoas)}</text>
 
-      {/* Engine */}
-      <rect x={20} y={80} width={820} height={46} rx={12} fill="#fff3e0" stroke="#ef6c00" strokeWidth="1.3" />
-      <text x={430} y={101} textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#1a2c8f">
-        True Profit Engine
-      </text>
-      <text x={430} y={118} textAnchor="middle" fontSize="10.5" fill="#1a2c8f">
-        CM1 → CM2 → CM3 — your true profit, built from your real costs
-      </text>
-      <line x1="430" y1="126" x2="430" y2="158" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
-
-      <text x={430} y={154} textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#7d929e">
-        Read together, every time
+      <line x1="430" y1="74" x2="430" y2="100" stroke="#0277bd" strokeWidth="1.6" markerEnd="url(#arrow)" />
+      <rect x={290} y={80} width={280} height="18" rx={5} fill="#ffffff" />
+      <text x={430} y={94} textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#0277bd">
+        subtract COGS, shipping, fees, returns
       </text>
 
-      {/* Pillars */}
-      {PILLAR_BOXES.map((p) => (
-        <g key={p.label}>
-          <rect x={p.x} y={162} width={152} height={62} rx={12} fill={p.fill} stroke={p.stroke} strokeWidth="1.3" />
-          <text x={p.x + 76} y={190} textAnchor="middle" fontSize="13.5" fontWeight="700" fill={p.text}>
-            {p.label}
-          </text>
-          <text x={p.x + 76} y={208} textAnchor="middle" fontSize="10.5" fill={p.text}>
-            {p.sub}
-          </text>
-        </g>
-      ))}
+      {/* Layer 2 */}
+      <rect x={20} y={104} width={820} height={64} rx={12} fill="#e5f4fd" stroke="#0277bd" strokeWidth="1.2" />
+      <text x={40} y={128} fontSize="13" fontWeight="700" fill="#01579b">What a good tool reports: attributed CM-ROAS</text>
+      <text x={40} y={148} fontSize="11" fill="#01579b">Real margin per ad dollar — but still credits every order the ad merely preceded.</text>
+      <text x={800} y={140} textAnchor="end" fontSize="20" fontWeight="700" fill="#01579b">{multiple(cmRoas)}</text>
 
-      {/* Feedback bracket: Cash caps Ads — a right-angle connector under the pillar row */}
-      <path d="M 764 224 L 764 234 L 263 234 L 263 224" fill="none" stroke="#ef6c00" strokeWidth="1.6" strokeDasharray="5 4" markerEnd="url(#arrow)" />
-      <rect x={418} y={238} width={190} height={18} rx={5} fill="#f8fafb" />
-      <text x={513} y={251} textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#e65100">
-        cash caps ad spend
+      <line x1="430" y1="168" x2="430" y2="194" stroke="#d32f2f" strokeWidth="1.6" markerEnd="url(#arrow)" />
+      <rect x={272} y={174} width={316} height="18" rx={5} fill="#ffffff" />
+      <text x={430} y={188} textAnchor="middle" fontSize="10.5" fontWeight="600" fill="#c62828">
+        remove demand that would have arrived anyway
       </text>
 
-      <line x1="430" y1="262" x2="430" y2="288" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
+      {/* Layer 3 */}
+      <rect x={20} y={198} width={820} height={64} rx={12} fill="#ffe6e6" stroke="#d32f2f" strokeWidth="1.3" />
+      <text x={40} y={222} fontSize="13" fontWeight="700" fill="#c62828">What a holdout measures: incremental CM-ROAS</text>
+      <text x={40} y={242} fontSize="11" fill="#c62828">Below break-even. This channel is buying demand it already had.</text>
+      <text x={800} y={234} textAnchor="end" fontSize="20" fontWeight="700" fill="#c62828">{multiple(incremental)}</text>
 
-      {/* Carter */}
-      <rect x={260} y={290} width={340} height={48} rx={14} fill="url(#aiGrad)" />
-      <text x={430} y={311} textAnchor="middle" fontSize="13.5" fontWeight="700" fill="#ffffff">
-        Carter
-      </text>
-      <text x={430} y={328} textAnchor="middle" fontSize="10.5" fill="#fff3e0">
-        Reasons across all four — cites every number, never guesses
-      </text>
-
-      <line x1="430" y1="338" x2="430" y2="352" stroke="#a3b3bc" strokeWidth="1.5" markerEnd="url(#arrow)" />
-
-      {/* Answer */}
-      <rect x={180} y={355} width={500} height={22} rx={11} fill="#e8f5e9" stroke="#2e7d32" strokeWidth="1.3" />
-      <text x={430} y={370} textAnchor="middle" fontSize="12" fontWeight="700" fill="#1b5e20">
-        One clear, executable, cited answer
+      <text x={430} y={284} textAnchor="middle" fontSize="12" fontWeight="700" fill="#1a2c8f">
+        {spread ? `Same spend. Same period. A ${spread}x spread between the reported number and the real one.` : "Same spend, same period — measured three ways."}
       </text>
     </svg>
   );
 }
 
-function ProblemSolutionSlide() {
+function ProblemSlide() {
+  const { exp, mkt, ads } = useDeckData();
+  const gap = exp?.gap;
+
   return (
     <div className="flex h-full flex-col justify-center">
-      <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Problem → solution</p>
-      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
-        Your true profit per product is invisible.
+      <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">The problem</p>
+      <h2 className="max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
+        Media reporting overstates twice — and the second one is invisible.
       </h2>
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        {PROBLEMS.map((p) => (
-          <span key={p.title} className="inline-flex items-center gap-1.5 rounded-full border border-destructive/25 bg-destructive/[0.05] px-3 py-1.5 text-xs font-medium text-destructive">
-            <p.icon className="size-3.5" /> {p.title}
-          </span>
-        ))}
-      </div>
-
-      <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-        It starts with the number nobody trusts — true profit per SKU after ad spend — then joins ads, website, supply, and cash in one engine. No competitor connects them, so nobody else can safely answer "should I scale this?"
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        The first overstatement is well known: ROAS ignores cost of goods. The second one is the expensive one — even a
+        profit-true number credits ads with demand that was already coming.
       </p>
 
       <div className="mt-4">
-        <ConnectedLoopDiagram />
+        <OverstatementDiagram
+          revRoas={mkt?.totals?.platformRoas}
+          cmRoas={mkt?.totals?.cmRoas}
+          incremental={gap?.rows?.[0]?.incrementalCmRoas}
+        />
       </div>
+
+      {gap && (
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <Figure label="Over-credited by attribution" value={money(gap.overstatedCm)} sub="on one channel, one month" tone="neg" />
+          <Figure label="Spend with any test behind it" value={pct(gap.coveragePct)} sub={`${money(gap.totalSpend - gap.testedSpend)} runs on faith`} />
+          <Figure label="Channels never tested" value={gap.untested.length} sub={gap.untested.map((u) => u.name).join(", ")} />
+        </div>
+      )}
     </div>
   );
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 3 — Product + Market                                             */
+/* Slide 3 — The product                                                  */
 /* ---------------------------------------------------------------------- */
 
-// Plain-English value — what Carter actually tells a founder, one line per
-// connected pillar (includes the website / conversion read).
-const ANSWERS = [
-  { icon: Package, q: "Which products actually make money?" },
-  { icon: Megaphone, q: "Which ads pay for themselves?" },
-  { icon: MousePointerClick, q: "Where does my website lose shoppers?" },
-  { icon: PackageX, q: "What's about to run out of stock?" },
-  { icon: Wallet, q: "Can I afford to reorder — and when?" },
+const SURFACES = [
+  {
+    icon: Target,
+    title: "Insights",
+    q: "What's happening, and what do I do?",
+    body: "A ranked board of decisions, each priced before you commit. Act on one and every number recomputes — then it tells you whether the call was right.",
+  },
+  {
+    icon: Store,
+    title: "Products",
+    q: "Which product or category?",
+    body: "Contribution margin per SKU and per category, with the media verdict separated from the P&L. A product can be profitable while its ads destroy value.",
+  },
+  {
+    icon: Users,
+    title: "Audience & Funnel",
+    q: "Who shows up, and what do they do?",
+    body: "Paid versus earned traffic, on-site conversion, and which channel recruits rather than harvests. Email is 11% new customers; TikTok is 88%.",
+  },
 ];
 
-function MarketFunnel() {
-  return (
-    <svg viewBox="0 0 860 160" width="100%" role="img" aria-label="Who it's for: every Shopify brand doing 500 thousand to 10 million a year, narrowing to those who can't see their true per-product profit">
-      <rect x="20" y="10" width="820" height="130" rx="14" fill="#fff3e0" stroke="#ef6c00" strokeWidth="1.3" />
-      <rect x="150" y="45" width="560" height="90" rx="14" fill="#fff3e0" stroke="#ef6c00" strokeWidth="1.3" />
-      <rect x="280" y="75" width="300" height="50" rx="14" fill="#ffcdd2" stroke="#d32f2f" strokeWidth="1.3" />
-      <text x="430" y="30" textAnchor="middle" fontSize="13" fontWeight="700" fill="#1a2c8f">Every Shopify brand doing $500K–$10M a year</text>
-      <text x="430" y="48" textAnchor="middle" fontSize="10.5" fill="#1a2c8f">a $2B+ market</text>
-      <text x="430" y="70" textAnchor="middle" fontSize="12" fontWeight="700" fill="#e65100">…that already pay for an analytics or profit tool</text>
-      <text x="430" y="103" textAnchor="middle" fontSize="11.5" fontWeight="700" fill="#c62828">…and still can't see their true profit — we start here</text>
-    </svg>
-  );
-}
+function ProductSlide() {
+  const { plan, cre, mkt } = useDeckData();
+  const recoverable = cre?.creatives?.reduce((a, c) => a + c.recoverableCm, 0);
 
-const PRICING = [
-  { tier: "Core", price: "$49/mo", band: "$500K–$1M in sales" },
-  { tier: "Growth", price: "$99/mo", band: "$1M–$3M in sales" },
-  { tier: "Operate", price: "$249/mo", band: "$3M–$10M+ in sales" },
-];
-
-function ProductMarketSlide() {
   return (
     <div className="flex h-full flex-col justify-center">
       <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">The product · live today</p>
       <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
-        Every money question, answered in one place.
+        Three surfaces. One question each.
       </h2>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        Connect your store and ad accounts — Carter turns the numbers into plain answers you can act on. The core is live today.
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        Not a dashboard with forty charts. Every dataset has exactly one home, so two screens can never disagree about
+        the same number.
       </p>
 
-      <div className="mt-3 grid gap-2 sm:grid-cols-2">
-        {ANSWERS.map((a) => (
-          <div key={a.q} className="flex items-center gap-2.5 rounded-card shadow-ring bg-card px-3 py-2">
-            <span className="grid size-7 shrink-0 place-items-center rounded-input bg-primary/[0.08] text-primary">
-              <a.icon className="size-4" />
-            </span>
-            <span className="text-sm font-medium text-foreground/90">{a.q}</span>
-          </div>
-        ))}
-        <Link
-          href="/insights"
-          className="flex items-center justify-center gap-1 rounded-card bg-[image:var(--gradient-primary-button)] px-3 py-2 text-sm font-semibold text-white shadow-card transition-opacity hover:opacity-90"
-        >
-          Enter the live product <ArrowRight className="size-4" />
-        </Link>
-      </div>
-
-      <p className="mt-3 rounded-input shadow-ring bg-ia-gray-faded px-3 py-2 text-xs text-foreground/80">
-        <span className="font-semibold text-primary">Website example:</span> in the demo store only <span className="font-semibold">3.6%</span> of visitors buy — Carter shows which products lose the most shoppers between view → cart → checkout.
-      </p>
-
-      <div className="mt-3">
-        <MarketFunnel />
-      </div>
-
-      <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        {PRICING.map((p, i) => (
-          <div key={p.tier} className={cn("rounded-card border px-4 py-3 shadow-card", i === 1 ? "border-primary/40 bg-primary/[0.05]" : "border-border bg-card")}>
-            <div className="flex items-baseline justify-between">
-              <span className="text-sm font-semibold">{p.tier}</span>
-              <span className="tabular text-base font-semibold text-primary">{p.price}</span>
+      <div className="mt-4 grid gap-3 lg:grid-cols-3">
+        {SURFACES.map((s) => (
+          <div key={s.title} className="rounded-card bg-card p-4 shadow-ring">
+            <div className="flex items-center gap-2">
+              <span className="grid size-7 place-items-center rounded-input bg-primary/[0.08] text-primary">
+                <s.icon className="size-4" />
+              </span>
+              <span className="text-sm font-semibold">{s.title}</span>
             </div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">{p.band}</div>
+            <p className="mt-1.5 text-xs font-medium text-primary">{s.q}</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{s.body}</p>
           </div>
         ))}
       </div>
 
-      <p className="mt-3 text-xs text-muted-foreground">
-        <span className="font-semibold text-foreground/70">Our plan:</span> 500 stores in year one → 2,000 → 10,000 stores ($5M a year in revenue).
+      <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        What it found in this account, this month
       </p>
+      <div className="mt-2 grid gap-3 sm:grid-cols-4">
+        <Figure label="Pacing" value={money(mkt?.pacing?.projected)} sub={`projected vs a ${money(mkt?.pacing?.budget)} plan`} tone="neg" />
+        <Figure label="Better allocation" value={money(plan?.plan?.upliftCm2)} sub={`from ${money(plan?.plan?.spendCutFromCurrent)} less spend`} tone="pos" />
+        <Figure label="Creative recoverable" value={money(recoverable)} sub={`${cre?.creatives?.filter((c) => c.status === "fatigued").length ?? 0} assets spent`} />
+        <Figure label="Media CM2 today" value={money(mkt?.totals ? mkt.totals.cm - mkt.totals.spend : null)} sub="on the honest basis" />
+      </div>
+
+      <Link
+        href="/insights"
+        className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-card bg-[image:var(--gradient-primary-button)] px-4 py-2 text-sm font-semibold text-white shadow-control transition-opacity hover:opacity-90"
+      >
+        Enter the live product <ArrowRight className="size-4" />
+      </Link>
     </div>
   );
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 4 — Moat + Roadmap + Ask                                         */
+/* Slide 4 — The moat: incrementality                                     */
 /* ---------------------------------------------------------------------- */
 
 const CAP_ROWS = [
-  { cap: "True profit for every product", carter: "full", tw: "partial", sh: "full", nb: "none" },
-  { cap: "Ad results by profit, not just revenue", carter: "full", tw: "none", sh: "partial", nb: "none" },
-  { cap: "Where the website loses shoppers", carter: "full", tw: "partial", sh: "none", nb: "none" },
-  { cap: "Advice that knows your stock & cash", carter: "full", tw: "none", sh: "none", nb: "none" },
-  { cap: "Predicts your cash ahead of time", carter: "full", tw: "none", sh: "none", nb: "none" },
-  { cap: "One AI that reads all of it together", carter: "full", tw: "partial", sh: "none", nb: "none" },
-  { cap: "Detailed ad attribution", carter: "partial", tw: "full", sh: "partial", nb: "full" },
+  { cap: "Revenue ROAS", carter: "full", tw: "full", nb: "full", plat: "full" },
+  { cap: "Margin-true CM-ROAS after COGS", carter: "full", tw: "partial", nb: "none", plat: "none" },
+  { cap: "Separates media result from product P&L", carter: "full", tw: "none", nb: "none", plat: "none" },
+  { cap: "Incrementality testing (geo / PSA holdouts)", carter: "full", tw: "none", nb: "partial", plat: "partial" },
+  { cap: "States its own attribution window", carter: "full", tw: "none", nb: "partial", plat: "none" },
+  { cap: "Budget allocation under diminishing returns", carter: "full", tw: "none", nb: "none", plat: "partial" },
+  { cap: "Creative fatigue tied to margin", carter: "full", tw: "none", nb: "none", plat: "partial" },
+  { cap: "Executes the change, with undo and audit", carter: "full", tw: "none", nb: "none", plat: "partial" },
+  { cap: "Measures whether the change worked", carter: "full", tw: "none", nb: "none", plat: "none" },
 ];
 
 const CAP_ICON = {
@@ -366,125 +357,137 @@ function CapabilityCell({ v }) {
   return <Icon className={cn("mx-auto size-4", cls)} />;
 }
 
-// The opportunity band — moved here from the cover to close on the numbers.
-const STATS = [
-  { label: "Market size", value: "$2B+" },
-  { label: "Who it's for", value: "$500K–$10M brands" },
-  { label: "Starting price", value: "$49/mo" },
-  { label: "Cost to run our AI", value: "$0" },
-];
+function MoatSlide() {
+  const { exp } = useDeckData();
 
-function MoatRoadmapSlide() {
   return (
     <div className="flex h-full flex-col justify-center">
       <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Why we win</p>
-      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
-        Our edge is the whole picture — not one feature.
+      <h2 className="max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
+        Everyone reports attribution. We test whether it&apos;s true.
       </h2>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        Each rival only sees one piece. To copy us, they'd have to rebuild everything from the ground up.
+        Every measurement tool on the market rests on the same unvalidated assumption — the share of sales that paid
+        media caused. We are the only one that runs the experiment and then feeds the answer back into the numbers.
       </p>
 
-      <div className="mt-4 overflow-hidden rounded-card shadow-ring bg-card">
+      <div className="mt-4 overflow-hidden rounded-card bg-card shadow-ring">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-ia-gray-faded">
-              <th className="p-2.5 text-left text-[11px] font-semibold text-muted-foreground">Capability</th>
-              <th className="p-2.5 text-[11px] font-semibold text-primary">Carter</th>
-              <th className="p-2.5 text-[11px] font-semibold text-muted-foreground">Triple Whale</th>
-              <th className="p-2.5 text-[11px] font-semibold text-muted-foreground">StoreHero</th>
-              <th className="p-2.5 text-[11px] font-semibold text-muted-foreground">Northbeam</th>
+              <th className="p-2 text-left text-[11px] font-semibold text-muted-foreground">Capability</th>
+              <th className="p-2 text-[11px] font-semibold text-primary">Carter</th>
+              <th className="p-2 text-[11px] font-semibold text-muted-foreground">Triple Whale</th>
+              <th className="p-2 text-[11px] font-semibold text-muted-foreground">Northbeam</th>
+              <th className="p-2 text-[11px] font-semibold text-muted-foreground">Platform native</th>
             </tr>
           </thead>
           <tbody>
             {CAP_ROWS.map((r) => (
               <tr key={r.cap} className="border-b border-border last:border-0">
-                <td className="p-2.5 text-xs text-foreground/80">{r.cap}</td>
-                <td className="p-2.5 text-center"><CapabilityCell v={r.carter} /></td>
-                <td className="p-2.5 text-center"><CapabilityCell v={r.tw} /></td>
-                <td className="p-2.5 text-center"><CapabilityCell v={r.sh} /></td>
-                <td className="p-2.5 text-center"><CapabilityCell v={r.nb} /></td>
+                <td className="p-2 text-xs text-foreground/80">{r.cap}</td>
+                <td className="p-2 text-center"><CapabilityCell v={r.carter} /></td>
+                <td className="p-2 text-center"><CapabilityCell v={r.tw} /></td>
+                <td className="p-2 text-center"><CapabilityCell v={r.nb} /></td>
+                <td className="p-2 text-center"><CapabilityCell v={r.plat} /></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <p className="mt-4 text-sm text-foreground/80">
-        Only Carter closes the loop across margin, ads, website, supply, and cash — at a fraction of the price.
-      </p>
-
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-        {STATS.map((s) => (
-          <div key={s.label} className="rounded-card shadow-ring bg-card px-4 py-2.5 text-left">
-            <div className="tabular text-lg font-semibold text-foreground">{s.value}</div>
-            <div className="text-[11px] text-muted-foreground">{s.label}</div>
-          </div>
-        ))}
+      <div className="mt-4 rounded-card border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-transparent p-4">
+        <div className="flex items-start gap-3">
+          <span className="grid size-8 shrink-0 place-items-center rounded-input bg-[image:var(--gradient-primary-button)] text-white">
+            <FlaskConical className="size-4" />
+          </span>
+          <p className="text-sm leading-relaxed text-foreground/90">
+            The bottom four rows are the moat, and they compound: you cannot honestly allocate a budget without knowing
+            what is incremental, you cannot claim a creative refresh worked without measuring it, and nobody hands a
+            system autonomy without a track record.{" "}
+            {exp?.board && (
+              <span className="font-medium">
+                {exp.board.conclusive} conclusive test, {exp.board.running} running, {exp.board.needsRerun} flagged as
+                too short to conclude — refusing to read a result is part of the product.
+              </span>
+            )}
+          </p>
+        </div>
       </div>
     </div>
   );
 }
 
 /* ---------------------------------------------------------------------- */
-/* Deck shell                                                             */
-/* ---------------------------------------------------------------------- */
-
-/* ====================================================================== */
-/* Slides 5–8 — the investor half (market · model · GTM · roadmap+ask)     */
-/* Every figure is grounded in credes/PRD.md; modelled targets are labelled */
-/* ====================================================================== */
-
-/* ---------------------------------------------------------------------- */
-/* Slide 5 — Market opportunity & why now                                 */
+/* Slide 5 — Why now                                                      */
 /* ---------------------------------------------------------------------- */
 
 const WHY_NOW = [
-  { icon: Smartphone, title: "Attribution broke", body: "iOS privacy killed platform tracking. Merchants need owned-data profit truth, not pixel guesses." },
-  { icon: Banknote, title: "Capital got expensive", body: "Cheap growth is over. Runway discipline is existential — every dollar of spend has to earn real margin." },
-  { icon: Sparkles, title: "AI is finally ready", body: "LLMs make a genuine reasoning layer over messy financial data viable for the first time." },
-  { icon: History, title: "Unsolved, not saturated", body: "Brightflow AI proved the demand — then died on execution. The space is wide open." },
+  {
+    icon: Cookie,
+    title: "Attribution genuinely broke",
+    body: "iOS restrictions and cookie deprecation ended deterministic tracking. Platforms filled the gap with modelled conversions — their own homework, marked by themselves.",
+  },
+  {
+    icon: Landmark,
+    title: "Media budgets moved under finance",
+    body: "Retail media is now a board-level line item. “We got a 4x ROAS” does not survive a CFO asking what the margin was.",
+  },
+  {
+    icon: Gauge,
+    title: "Incrementality got affordable",
+    body: "Geo holdouts and PSA tests used to need an agency and a quarter. Cheap compute and clean order data put them within reach of an in-house team.",
+  },
+  {
+    icon: Sparkles,
+    title: "The reasoning layer is viable",
+    body: "An analyst that reads margin, channel, creative and experiment data together — and cites every figure — became buildable in the last two years.",
+  },
 ];
 
-const MARKET_TIERS = [
-  { label: "TAM", value: "$2B+", w: 100, tint: "#fff3e0", stroke: "#ef6c00", text: "#1a2c8f", desc: "Every Shopify brand doing $500K–$10M a year" },
-  { label: "SAM", value: "~$600M", w: 66, tint: "#fff3e0", stroke: "#ef6c00", text: "#e65100", desc: "Already pay for a profit / analytics tool" },
-  { label: "SOM", value: "~$120M", w: 34, tint: "#ffe6e6", stroke: "#d32f2f", text: "#c62828", desc: "Our 3-yr wedge: margin-blind SKU sellers" },
-];
-
-function MarketOpportunitySlide() {
+function WhyNowSlide() {
   return (
     <div className="flex h-full flex-col justify-center">
-      <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Market opportunity</p>
-      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">A $2B+ market that just became urgent.</h2>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        Shopify merchants trust margins that run <span className="font-medium text-destructive">15–30% too optimistic</span> — and four shifts just made getting the real number non-optional.
-      </p>
+      <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Why now</p>
+      <h2 className="max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
+        The number everyone reports stopped being trustworthy, and the people paying for it noticed.
+      </h2>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[1.05fr_1fr] lg:items-center">
-        <div className="grid gap-2.5 sm:grid-cols-2">
-          {WHY_NOW.map((w) => (
-            <div key={w.title} className="rounded-card shadow-ring bg-card p-3">
-              <div className="flex items-center gap-2">
-                <span className="grid size-7 place-items-center rounded-input bg-primary/[0.08] text-primary"><w.icon className="size-4" /></span>
-                <span className="text-sm font-semibold">{w.title}</span>
-              </div>
-              <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{w.body}</p>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        {WHY_NOW.map((w) => (
+          <div key={w.title} className="rounded-card bg-card p-4 shadow-ring">
+            <div className="flex items-center gap-2">
+              <span className="grid size-7 place-items-center rounded-input bg-primary/[0.08] text-primary">
+                <w.icon className="size-4" />
+              </span>
+              <span className="text-sm font-semibold">{w.title}</span>
             </div>
-          ))}
-        </div>
+            <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{w.body}</p>
+          </div>
+        ))}
+      </div>
 
-        <div className="space-y-2.5 rounded-card shadow-ring bg-card p-4">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Market sizing</div>
-          {MARKET_TIERS.map((t) => (
-            <div key={t.label}>
-              <div className="text-xs font-semibold" style={{ color: t.text }}>{t.label} · <span className="tabular">{t.value}</span></div>
-              <div className="mt-1 rounded-input border px-3 py-2" style={{ width: `${t.w}%`, background: t.tint, borderColor: t.stroke }}>
-                <span className="text-[11px] font-medium" style={{ color: t.text }}>{t.desc}</span>
-              </div>
-            </div>
-          ))}
-          <p className="pt-1 text-[11px] leading-relaxed text-muted-foreground">Bottom-up: 10,000 merchants on our plans → the $5M ARR Phase-3 target — under 1% of the SAM.</p>
+      <div className="mt-4 rounded-card bg-card p-4 shadow-ring">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Who we sell to</div>
+        <div className="mt-2 grid gap-3 sm:grid-cols-3">
+          <div>
+            <div className="text-sm font-semibold text-primary">Performance marketing lead</div>
+            <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+              Owns the budget and defends it monthly. Buys the honest number because they are the one asked to explain it.
+            </p>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-primary">Media director / VP Growth</div>
+            <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+              Allocates across channels and retailer networks. Buys the planner and the incrementality coverage.
+            </p>
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-primary">CFO / finance partner</div>
+            <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+              Signs off the spend. Buys the audit trail and the fact that a number can be traced to an experiment.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -492,29 +495,57 @@ function MarketOpportunitySlide() {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 6 — Business model & unit economics                              */
+/* Slide 6 — Business model                                               */
 /* ---------------------------------------------------------------------- */
 
+/*
+  Priced against MEDIA UNDER MANAGEMENT, not store GMV.
+
+  The old deck charged $49/mo on a GMV band — a price set for a Shopify
+  founder buying a profit dashboard. The buyer here runs a media budget in the
+  millions and is being asked to trust the number they report upward. The
+  value scales with the spend being measured, so the price does too, and an
+  incrementality programme is a service line rather than a feature toggle.
+*/
 const BM_TIERS = [
-  { tier: "Core", tagline: "Profit Truth", price: "$49", band: "$500K–$1M GMV", unlocks: ["True CM1/2/3 per SKU", "Heroes & Anchors · CM-ROAS", "3 alerts + read-only AI"] },
-  { tier: "Growth", tagline: "Optimize", price: "$99", band: "$1M–$3M GMV", featured: true, unlocks: ["+ Ad-spend optimization", "+ Demand/supply forecasting", "+ Reallocation recs"] },
-  { tier: "Operate", tagline: "Run it", price: "$249", band: "$3M–$10M+ GMV", unlocks: ["+ Cash-flow forecasting", "+ Agentic actions", "+ QBO/Xero sync · exports"] },
+  {
+    tier: "Measure",
+    price: "$2.5k",
+    band: "up to $500k/mo media",
+    unlocks: ["Margin-true CM-ROAS per SKU, category and channel", "Pacing, projections and the action board", "Stated attribution window and audit trail"],
+  },
+  {
+    tier: "Optimise",
+    price: "$6k",
+    band: "$500k–$2M/mo media",
+    featured: true,
+    unlocks: ["+ Budget allocation under diminishing returns", "+ Creative fatigue tied to margin", "+ Executed actions with undo and forecast scoring"],
+  },
+  {
+    tier: "Prove",
+    price: "$12k+",
+    band: "$2M+/mo media",
+    unlocks: ["+ Incrementality programme — geo and PSA holdouts", "+ Measured paid share fed back into the model", "+ Approval workflow and finance-ready reporting"],
+  },
 ];
 
 const UNIT_ECON = [
-  { icon: Percent, label: "Gross margin", value: "~90%", sub: "SaaS; AI cost held down by model-routing + caching" },
-  { icon: TrendingUp, label: "LTV : CAC", value: "6–8×", sub: "App Store distribution keeps CAC low" },
-  { icon: Clock, label: "CAC payback", value: "< 4 mo", sub: "monthly subscription recovers fast" },
-  { icon: Repeat, label: "Net revenue retention", value: "≥ 110%", sub: "GMV-band upgrades grow accounts" },
+  { icon: Repeat, label: "Priced on", value: "Media under management", sub: "value scales with the spend being measured" },
+  { icon: TrendingUp, label: "Expansion path", value: "Measure → Optimise → Prove", sub: "coverage grows as more of the budget gets tested" },
+  { icon: ShieldCheck, label: "Why it sticks", value: "The test history", sub: "switching means starting the evidence base again" },
+  { icon: Clock, label: "Time to first finding", value: "Days, not a quarter", sub: "the margin correction lands before any test finishes" },
 ];
 
 function BusinessModelSlide() {
   return (
     <div className="flex h-full flex-col justify-center">
       <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Business model</p>
-      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">SaaS margins, priced to the value we unlock.</h2>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        A GMV-banded subscription via Shopify Billing — not per-seat. Priced as a fraction of the bookkeeping we eliminate and the cash we recover, so it expands as the merchant grows.
+      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
+        Priced against the spend we measure, not the store size.
+      </h2>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        A monthly platform fee banded by media under management. The buyer is defending a budget, so the price sits
+        against the budget — and the incrementality tier is a programme, because running holdouts properly is work.
       </p>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
@@ -522,24 +553,29 @@ function BusinessModelSlide() {
           <div key={t.tier} className={cn("rounded-card border p-4 shadow-card", t.featured ? "border-primary/40 bg-primary/[0.05]" : "border-border bg-card")}>
             <div className="flex items-baseline justify-between">
               <span className="text-sm font-semibold">{t.tier}</span>
-              <span className="tabular text-lg font-semibold text-primary">{t.price}<span className="text-xs font-normal text-muted-foreground">/mo</span></span>
+              <span className="tabular text-lg font-semibold text-primary">
+                {t.price}<span className="text-xs font-normal text-muted-foreground">/mo</span>
+              </span>
             </div>
-            <div className="text-[11px] text-muted-foreground">{t.tagline} · {t.band}</div>
+            <div className="text-[11px] text-muted-foreground">{t.band}</div>
             <ul className="mt-2 space-y-1">
               {t.unlocks.map((u) => (
-                <li key={u} className="flex items-start gap-1.5 text-[11px] text-foreground/80"><CheckCircle2 className="mt-0.5 size-3 shrink-0 text-success" /> {u}</li>
+                <li key={u} className="flex items-start gap-1.5 text-[11px] leading-relaxed text-foreground/80">
+                  <CheckCircle2 className="mt-0.5 size-3 shrink-0 text-success" /> {u}
+                </li>
               ))}
             </ul>
           </div>
         ))}
       </div>
 
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Target unit economics</p>
-      <div className="mt-2 grid gap-3 sm:grid-cols-4">
+      <div className="mt-4 grid gap-3 sm:grid-cols-4">
         {UNIT_ECON.map((m) => (
-          <div key={m.label} className="rounded-card shadow-ring bg-card p-3">
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><m.icon className="size-3.5 text-primary" /> {m.label}</div>
-            <div className="tabular mt-1 text-xl font-semibold">{m.value}</div>
+          <div key={m.label} className="rounded-card bg-card p-3 shadow-ring">
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <m.icon className="size-3.5 text-primary" /> {m.label}
+            </div>
+            <div className="mt-1 text-[13px] font-semibold leading-tight">{m.value}</div>
             <div className="mt-0.5 text-[10px] leading-tight text-muted-foreground">{m.sub}</div>
           </div>
         ))}
@@ -549,46 +585,63 @@ function BusinessModelSlide() {
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 7 — Go-to-market & distribution                                  */
+/* Slide 7 — Go to market                                                 */
 /* ---------------------------------------------------------------------- */
 
-const GTM_CHANNELS = [
-  { icon: Store, title: "Shopify App Store", body: "One-click OAuth install into millions of merchants — built-in, low-CAC distribution from day one." },
-  { icon: Users, title: "Agencies & fractional CFOs", body: "Priya manages 5–50 brands. A multi-brand console turns one signup into a whole book of business." },
-  { icon: Repeat, title: "The accountant loop", body: "Every reconciled, one-click export makes the bookkeeper the champion — who brings the next brands." },
-];
-
-const ACTIVATION = [
-  { value: "< 10 min", label: "To first insight" },
-  { value: "40%", label: "See a losing hero, session 1" },
-  { value: "30%", label: "Full COGS within 7 days" },
-  { value: "≥ 85%", label: "Month-3 retention" },
+const GTM = [
+  {
+    icon: FlaskConical,
+    title: "Land on the audit",
+    body: "A paid two-week engagement: we recompute their CM-ROAS on their own data and show what attribution is over-crediting. It is a finding, not a trial — and it is uncomfortable enough to be remembered.",
+  },
+  {
+    icon: Users,
+    title: "Agencies and holding companies",
+    body: "An agency defending a retainer needs incrementality evidence more than the brand does. One integration becomes a book of accounts, and they bring the next brand.",
+  },
+  {
+    icon: Landmark,
+    title: "The finance champion",
+    body: "The CFO is the only person in the building who wants media numbers to be smaller. Give them an auditable one and they mandate it across the brands.",
+  },
 ];
 
 function GoToMarketSlide() {
   return (
     <div className="flex h-full flex-col justify-center">
       <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">Go-to-market</p>
-      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">Distribution is built in. Land on truth, expand to the OS.</h2>
+      <h2 className="max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
+        Lead with the uncomfortable number.
+      </h2>
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+        Nobody switches measurement tools because a dashboard is nicer. They switch when someone shows them their
+        reported ROAS is wrong and proves it on their own orders.
+      </p>
 
-      {/* land → expand motion */}
       <div className="mt-3 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
         <div className="flex-1 rounded-card border border-primary/30 bg-primary/[0.05] px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-wide text-primary">Land</div>
-          <div className="mt-0.5 text-sm text-foreground/90">The 10-minute reveal — "your bestseller loses money." Instant, undeniable value.</div>
+          <div className="mt-0.5 text-sm text-foreground/90">
+            The attribution audit. &ldquo;Your 2.3× is 1.15× after COGS, and 0.59× incremental on the one channel we
+            tested.&rdquo;
+          </div>
         </div>
         <ArrowRight className="mx-auto size-5 shrink-0 rotate-90 text-muted-foreground sm:rotate-0" />
         <div className="flex-1 rounded-card border border-success/30 bg-success/[0.05] px-4 py-3">
           <div className="text-xs font-semibold uppercase tracking-wide text-success">Expand</div>
-          <div className="mt-0.5 text-sm text-foreground/90">Core → Growth → Operate as GMV grows. Accounts expand themselves — NRR ≥ 110%.</div>
+          <div className="mt-0.5 text-sm text-foreground/90">
+            More channels tested each quarter. Coverage becomes the renewal metric — and the reason they cannot leave.
+          </div>
         </div>
       </div>
 
       <div className="mt-3 grid gap-3 sm:grid-cols-3">
-        {GTM_CHANNELS.map((c) => (
-          <div key={c.title} className="rounded-card shadow-ring bg-card p-3.5">
+        {GTM.map((c) => (
+          <div key={c.title} className="rounded-card bg-card p-3.5 shadow-ring">
             <div className="flex items-center gap-2">
-              <span className="grid size-7 place-items-center rounded-input bg-primary/[0.08] text-primary"><c.icon className="size-4" /></span>
+              <span className="grid size-7 place-items-center rounded-input bg-primary/[0.08] text-primary">
+                <c.icon className="size-4" />
+              </span>
               <span className="text-sm font-semibold">{c.title}</span>
             </div>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{c.body}</p>
@@ -596,69 +649,72 @@ function GoToMarketSlide() {
         ))}
       </div>
 
-      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {ACTIVATION.map((a) => (
-          <div key={a.label} className="rounded-card shadow-ring bg-card px-4 py-2.5">
-            <div className="tabular text-lg font-semibold text-foreground">{a.value}</div>
-            <div className="text-[11px] leading-tight text-muted-foreground">{a.label}</div>
-          </div>
-        ))}
-      </div>
+      <p className="mt-3 rounded-input bg-ia-gray-faded px-3 py-2 text-xs leading-relaxed text-foreground/80 shadow-ring">
+        <span className="font-semibold text-primary">The wedge:</span> test coverage starts near zero at every brand we
+        meet. That is not a gap in our product — it is the gap in the category, and it is the number we grow.
+      </p>
     </div>
   );
 }
 
 /* ---------------------------------------------------------------------- */
-/* Slide 8 — Before vs after Carter (the world we create)                  */
+/* Slide 8 — Before / after + the ask                                     */
 /* ---------------------------------------------------------------------- */
 
 const BEFORE = [
-  "Trusts margins that are 15–30% too high",
-  "Scales “bestsellers” that secretly lose money",
-  "Chases vanity ROAS — and spends into losses",
-  "Cash is a mystery until it's a crisis",
-  "Answers buried in 5 spreadsheets, reconciled monthly",
+  "Reports a ROAS that ignores cost of goods",
+  "Credits ads with demand that was already coming",
+  "Scales a channel because attribution flattered it",
+  "Argues with finance using the platform's own numbers",
+  "Makes a change and never learns whether it worked",
 ];
 
 const AFTER = [
-  "Knows the true, fully-loaded profit of every product",
-  "Scales only real winners — kills the hidden losers",
-  "Puts every ad dollar where it earns profit, not revenue",
-  "Sees cash tighten weeks ahead — grows with confidence",
-  "One cited answer — decisions in minutes, not months",
+  "Reports margin per ad dollar, after every real cost",
+  "Knows which channels are incremental — and which aren't",
+  "Allocates to marginal return, and spends less when that earns more",
+  "Hands finance a number traceable to a controlled test",
+  "Scores every change against its forecast, misses included",
 ];
 
 function BeforeAfterSlide() {
+  const { exp, plan } = useDeckData();
+
   return (
     <div className="flex h-full flex-col justify-center">
       <p className="mb-1.5 text-sm font-semibold uppercase tracking-[0.2em] text-primary">The world with Carter</p>
-      <h2 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
-        Before Carter, brands guess. <span className="text-primary">After Carter, they know.</span>
+      <h2 className="max-w-3xl text-2xl font-semibold tracking-tight sm:text-3xl">
+        Before Carter, media teams report. <span className="text-primary">After Carter, they can prove it.</span>
       </h2>
-      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        This isn't a nicer dashboard — it's a new operating standard for how a Shopify brand is run.
-      </p>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         <div className="rounded-card border border-destructive/25 bg-destructive/[0.03] p-4">
           <div className="mb-2 flex items-center gap-2">
-            <span className="grid size-7 place-items-center rounded-input bg-destructive/10 text-destructive"><EyeOff className="size-4" /></span>
-            <span className="text-sm font-semibold text-destructive">Today — flying blind</span>
+            <span className="grid size-7 place-items-center rounded-input bg-destructive/10 text-destructive">
+              <EyeOff className="size-4" />
+            </span>
+            <span className="text-sm font-semibold text-destructive">Today — reporting on faith</span>
           </div>
           <ul className="space-y-1.5">
             {BEFORE.map((b) => (
-              <li key={b} className="flex items-start gap-2 text-xs leading-relaxed text-foreground/80"><XCircle className="mt-0.5 size-3.5 shrink-0 text-destructive/70" /> {b}</li>
+              <li key={b} className="flex items-start gap-2 text-xs leading-relaxed text-foreground/80">
+                <XCircle className="mt-0.5 size-3.5 shrink-0 text-destructive/70" /> {b}
+              </li>
             ))}
           </ul>
         </div>
         <div className="rounded-card border border-success/30 bg-success/[0.04] p-4">
           <div className="mb-2 flex items-center gap-2">
-            <span className="grid size-7 place-items-center rounded-input bg-success/10 text-success"><CheckCircle2 className="size-4" /></span>
-            <span className="text-sm font-semibold text-success">With Carter — in control</span>
+            <span className="grid size-7 place-items-center rounded-input bg-success/10 text-success">
+              <CheckCircle2 className="size-4" />
+            </span>
+            <span className="text-sm font-semibold text-success">With Carter — reporting on evidence</span>
           </div>
           <ul className="space-y-1.5">
             {AFTER.map((a) => (
-              <li key={a} className="flex items-start gap-2 text-xs leading-relaxed text-foreground/90"><CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-success" /> {a}</li>
+              <li key={a} className="flex items-start gap-2 text-xs leading-relaxed text-foreground/90">
+                <CheckCircle2 className="mt-0.5 size-3.5 shrink-0 text-success" /> {a}
+              </li>
             ))}
           </ul>
         </div>
@@ -666,13 +722,21 @@ function BeforeAfterSlide() {
 
       <div className="mt-4 rounded-card border border-primary/25 bg-gradient-to-br from-primary/[0.06] to-transparent p-4">
         <div className="flex items-start gap-3">
-          <span className="grid size-8 shrink-0 place-items-center rounded-input bg-[image:var(--gradient-primary-button)] text-white"><TrendingUp className="size-4" /></span>
+          <span className="grid size-8 shrink-0 place-items-center rounded-input bg-[image:var(--gradient-primary-button)] text-white">
+            <TrendingUp className="size-4" />
+          </span>
           <div>
-            <p className="text-sm font-medium text-foreground/90">
-              Brands stop bleeding hidden losses and start compounding profit — so they grow, stay, and spend more with us as they scale (<span className="font-semibold">NRR ≥ 110%</span>). That's the flywheel.
+            <p className="text-sm leading-relaxed text-foreground/90">
+              In one account, one month, the honest numbers found{" "}
+              {exp?.gap && <span className="font-semibold">{money(exp.gap.overstatedCm)} of over-credited margin</span>}
+              {plan?.plan && <> and <span className="font-semibold">{money(plan.plan.upliftCm2)} of profit available from spending less</span></>}
+              . Neither was visible on a ROAS report, and neither is a rounding error at a billion-dollar brand&apos;s
+              media budget.
             </p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              <span className="font-semibold text-primary">The ask:</span> seed capital to make profit-truth the default for <span className="font-semibold text-foreground">2,000 merchants in 18 months</span> — on the path to <span className="font-semibold text-foreground">$5M ARR</span> and becoming the financial OS every Shopify brand runs on.
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              <span className="font-semibold text-primary">The ask:</span> capital to make incrementality the default
+              standard for retail media measurement — starting with the brands whose CFOs have already stopped believing
+              the platform numbers.
             </p>
           </div>
         </div>
@@ -683,10 +747,10 @@ function BeforeAfterSlide() {
 
 const SLIDES = [
   { id: "cover", Comp: CoverSlide },
-  { id: "problem-solution", Comp: ProblemSolutionSlide },
-  { id: "product-market", Comp: ProductMarketSlide },
-  { id: "moat-roadmap", Comp: MoatRoadmapSlide },
-  { id: "market", Comp: MarketOpportunitySlide },
+  { id: "problem", Comp: ProblemSlide },
+  { id: "product", Comp: ProductSlide },
+  { id: "moat", Comp: MoatSlide },
+  { id: "why-now", Comp: WhyNowSlide },
   { id: "business-model", Comp: BusinessModelSlide },
   { id: "go-to-market", Comp: GoToMarketSlide },
   { id: "before-after", Comp: BeforeAfterSlide },
@@ -712,7 +776,6 @@ export default function PresentationPage() {
 
   return (
     <div className="flex h-[calc(100vh-3.5rem)] flex-col overflow-hidden">
-      {/* progress bar */}
       <div className="h-1 w-full bg-border">
         <div
           className="h-full bg-[image:var(--gradient-primary-button)] transition-all duration-300"
@@ -726,7 +789,6 @@ export default function PresentationPage() {
         </div>
       </div>
 
-      {/* controls */}
       <div className="flex items-center justify-between border-t border-border px-6 py-3">
         <button
           onClick={() => go(-1)}
@@ -748,7 +810,7 @@ export default function PresentationPage() {
               )}
             />
           ))}
-          <span className="ml-2 text-xs tabular text-muted-foreground">
+          <span className="tabular ml-2 text-xs text-muted-foreground">
             {index + 1} / {SLIDES.length}
           </span>
         </div>

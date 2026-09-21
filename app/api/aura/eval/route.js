@@ -9,7 +9,7 @@
 import { NextResponse } from "next/server";
 import { GOLDEN_SET, buildAllowedNumbers, extractNumericClaims, isBenignNumber } from "@/lib/ai/goldenSet";
 import { answerFor } from "@/lib/api/mock/ai";
-import { allProducts, productsSummary, cashCalendar, losingHero } from "@/lib/api/mock/products";
+import { allProducts, productsSummary, losingHero } from "@/lib/api/mock/products";
 import { marketingData } from "@/lib/api/mock/marketing";
 import { insightsBoard } from "@/lib/compute/insights";
 import { buildDailyBrief } from "@/lib/compute/dailyBrief";
@@ -17,7 +17,7 @@ import { buildDailyBrief } from "@/lib/compute/dailyBrief";
 export const dynamic = "force-dynamic";
 
 function engines() {
-  return { allProducts, productsSummary, cashCalendar, losingHero, marketingData, insightsBoard, buildDailyBrief };
+  return { allProducts, productsSummary, losingHero, marketingData, insightsBoard, buildDailyBrief };
 }
 
 // Concatenate everything an answer asserts into one searchable/checkable blob.

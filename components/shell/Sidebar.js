@@ -3,26 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, ExternalLink } from "lucide-react";
-import { NAV_GROUPS, MIRO_URL } from "@/lib/nav";
+import { ChevronDown } from "lucide-react";
+import { NAV_GROUPS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
-
-// Miro brand mark — a small nod to the board (yellow ground, "m i r o" as four
-// strokes). Recognizable without ripping the exact logo; reads as an external
-// tool link next to our monochrome nav icons. Deliberately NOT Carter palette.
-function MiroIcon({ className }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
-      <rect x="1" y="1" width="22" height="22" rx="5" fill="#FFDD33" />
-      <g fill="#050038">
-        <rect x="6" y="8" width="2.1" height="9" rx="1" />
-        <rect x="9.7" y="7" width="2.1" height="10" rx="1" />
-        <rect x="13.4" y="8.5" width="2.1" height="8.5" rx="1" />
-        <rect x="17.1" y="6.5" width="2.1" height="10.5" rx="1" />
-      </g>
-    </svg>
-  );
-}
 
 function isActive(pathname, href, exact = false) {
   if (href === "/") return pathname === "/";
@@ -153,19 +136,6 @@ export function Sidebar({ signals = {} }) {
         ))}
       </nav>
 
-      {/* Footer — external Miro board / PRD */}
-      <div className="px-2 pb-3 pt-2">
-        <a
-          href={MIRO_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative flex h-9 items-center gap-2 rounded-nav px-4 text-[14px] font-medium leading-none text-[#455a64] transition-colors hover:bg-ia-gray-faded hover:text-foreground"
-        >
-          <MiroIcon className="size-4 shrink-0 rounded-[3px]" />
-          <span className="flex-1 truncate">Miro Board PRD</span>
-          <ExternalLink className="size-3 shrink-0 text-muted-foreground/50 transition-colors group-hover:text-muted-foreground" />
-        </a>
-      </div>
     </aside>
   );
 }

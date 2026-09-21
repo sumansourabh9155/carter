@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, RefreshCw, Landmark, MousePointerClick, Radio, ServerCog } from "lucide-react";
+import { Check, RefreshCw, MousePointerClick, Radio, ServerCog } from "lucide-react";
 import { PageHeader, PageContainer } from "@/components/PageHeader";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 */
 const INITIAL_CONNECTIONS = [
   // Commerce — the cost + order spine
-  { id: "shopify", name: "Shopify", logo: "shopify.svg", status: "connected", detail: "Orders, products, payouts · synced 8m ago", group: "Commerce" },
+  { id: "shopify", name: "Shopify", logo: "shopify.svg", status: "connected", detail: "Orders, products, catalogue · synced 8m ago", group: "Commerce" },
   { id: "webpixel", name: "Carter Pixel", icon: MousePointerClick, status: "connected", detail: "On-site behavior via Shopify Web Pixels API · streaming live", group: "Commerce" },
 
   // Channels — spend & catalog
@@ -33,12 +33,12 @@ const INITIAL_CONNECTIONS = [
   { id: "tiktokevents", name: "TikTok Events API", icon: ServerCog, status: "connected", detail: "Server-side conversions · synced 6m ago", group: "Server-side" },
   { id: "snapcapi", name: "Snapchat CAPI", icon: ServerCog, status: "available", detail: "Improves match rate on Snapchat spend", group: "Server-side" },
 
-  // Finance — phase 2+
-  { id: "bank", name: "Bank", icon: Landmark, status: "phase2", detail: "Powers cash-flow forecasting", group: "Finance" },
-  { id: "qbo", name: "QuickBooks / Xero", logo: "qbo.svg", status: "phase2", detail: "Two-way accounting sync", group: "Finance" },
 ];
 
-const GROUP_ORDER = ["Commerce", "Channels", "Server-side", "Finance"];
+// Bank and accounting connectors were removed: treasury and bookkeeping are
+// merchant finance, not retail media. Carter measures money that moves through
+// campaigns, not the advertiser's books.
+const GROUP_ORDER = ["Commerce", "Channels", "Server-side"];
 
 function StatusBadge({ status }) {
   if (status === "connected") return <Badge variant="success"><Check className="size-3" /> Connected</Badge>;

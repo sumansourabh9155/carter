@@ -3,7 +3,7 @@
 import { money } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-// Lightweight div-based waterfall (Revenue → … → CM3). Markers are absolute
+// Lightweight div-based waterfall (Revenue → … → CM2). Markers are absolute
 // totals from 0; deltas float from the running total.
 export function MarginWaterfall({ data, height = 220 }) {
   let running = 0;
