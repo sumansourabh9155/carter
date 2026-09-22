@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useCallback, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus, AlertTriangle, TrendingDown, Wallet, Check, ArrowRight, Sparkles, Zap, MousePointerClick } from "lucide-react";
+import { Plus, AlertTriangle, TrendingDown, Wallet, Check, ArrowRight, Sparkles, Zap, MousePointerClick, ChevronDown } from "lucide-react";
 import { getInsightsBoard, getAlerts, createAlert, getDailyBrief, getMetrics, getMarketing, getCreatives, getBudgetPlan } from "@/lib/api";
 import { VERDICT_TO_ACTION, ACTION_TYPES } from "@/lib/actions/types";
 import { ActionDialog } from "@/components/actions/ActionDialog";
@@ -133,6 +133,94 @@ function HealthStrip({ board }) {
       <Tile label="Needs action" value={health.actionCount} sub="prioritized below" tone={health.actionCount > 0 ? "warn" : undefined} />
       <Tile label="Act today" value={health.criticalCount} sub="critical issues" tone={health.criticalCount > 0 ? "neg" : "pos"} />
       <Tile label="Opportunities" value={opportunityCount} sub="upside to capture" tone={opportunityCount > 0 ? "pos" : undefined} />
+    </div>
+  );
+}
+
+/* --------------------------------------------------------- board grouping */
+
+/*
+  The board used to render every card into one flat two-column grid. At ten
+  cards that has two costs:
+
+    · The HealthStrip directly above counts "Act today: 2" and then never says
+      WHICH two. Severity was carried only by a 3px rail and a badge colour,
+      so connecting the tile to its cards meant scanning ten headers.
+    · Cards of very different urgency sat at identical visual weight. A $90
+      informational note and a $12k bleed looked like the same object.
+
+  Grouping by severity fixes both: the tile counts now have a matching section
+  heading, and the reading order is urgency order. Each heading also carries
+  the summed dollar impact of its group, which is the number that decides
+  whether a section is worth opening at all.
+*/
+const SEV_SECTIONS = [
+  { id: "critical", label: "Act today", note: "losing money right now", defaultOpen: true },
+  { id: "warning", label: "Worth doing this week", note: "drifting, not yet bleeding", defaultOpen: true },
+  { id: "opportunity", label: "Opportunities", note: "upside to capture", defaultOpen: true },
+  // Informational cards carry no action by definition, so they start closed.
+  // They are kept rather than dropped — "nothing else is wrong" is itself
+  // worth being able to check.
+  { id: "info", label: "For information", note: "no action required", defaultOpen: false },
+];
+
+/*
+  Grouping a list by a fixed set of buckets can silently DROP anything that
+  doesn't match a bucket — and on a triage board a disappeared card is a
+  missed decision, not a cosmetic bug. So anything with an unrecognised
+  severity collects into a trailing group rather than being filtered away.
+  The engine emits exactly these four today; this keeps that from being a
+  load-bearing assumption.
+*/
+function groupBySeverity(actions) {
+  const known = new Set(SEV_SECTIONS.map((s) => s.id));
+  const groups = SEV_SECTIONS.map((section) => ({
+    section,
+    actions: actions.filter((a) => a.severity === section.id),
+  }));
+  const rest = actions.filter((a) => !known.has(a.severity));
+  if (rest.length > 0) {
+    groups.push({
+      section: { id: "info", label: "Other findings", note: "unclassified severity", defaultOpen: true },
+      actions: rest,
+    });
+  }
+  return groups;
+}
+
+function BoardSection({ section, actions, onApplied }) {
+  const [open, setOpen] = useState(section.defaultOpen);
+  if (actions.length === 0) return null;
+
+  // `impact` is a dollar magnitude on every card. Summing it per group gives
+  // the section its own headline — "$14,880 at stake" earns a click in a way
+  // that a bare count does not.
+  const impact = actions.reduce((a, c) => a + (c.impact ?? 0), 0);
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="group flex w-full items-center gap-2 rounded-button py-2 text-left transition-colors hover:bg-surface-subtle"
+      >
+        <ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", !open && "-rotate-90")} />
+        <span className={cn("size-2 shrink-0 rounded-full", SEV_DOT[section.id])} />
+        <span className="text-[13px] font-semibold leading-5 text-brand-800">{section.label}</span>
+        <Badge variant={SEV_VARIANT[section.id]} size="sm">{actions.length}</Badge>
+        <span className="text-[11px] text-muted-foreground">{section.note}</span>
+        {impact > 0 && (
+          <span className="tabular ml-auto pr-1 text-[12px] font-semibold text-muted-foreground">
+            {money(impact)} {section.id === "opportunity" ? "upside" : "at stake"}
+          </span>
+        )}
+      </button>
+      {open && (
+        <div className="mt-2 grid gap-4 md:grid-cols-2">
+          {actions.map((a) => <ActionCard key={a.id} a={a} onApplied={onApplied} />)}
+        </div>
+      )}
     </div>
   );
 }
@@ -523,6 +611,119 @@ function PaceStat({ label, value, hint, tone }) {
   );
 }
 
+/*
+  The Channels view is 4,400px tall — a little under five screens at 1440×900
+  — and it had no landmarks of any kind: no headings outside the cards, no way
+  to jump, no indication of how much was left. It reads as one undifferentiated
+  scroll, which is the opposite of "the evidence behind the decision" being
+  easy to reach from a card that links to it.
+
+  These are the six questions the view actually answers, in the order it
+  answers them. The bar is sticky, so it doubles as a position indicator.
+*/
+const CHANNEL_SECTIONS = [
+  { id: "ch-pacing", label: "Pacing" },
+  { id: "ch-plan", label: "Plan" },
+  { id: "ch-profit", label: "Profitability" },
+  { id: "ch-claims", label: "Platform claims" },
+  { id: "ch-creative", label: "Creative" },
+  { id: "ch-campaigns", label: "Campaigns" },
+];
+
+function SectionNav({ sections }) {
+  const [active, setActive] = useState(sections[0]?.id);
+
+  /*
+    Computed from geometry on scroll rather than with an IntersectionObserver.
+    An observer hands you only the entries whose intersection CHANGED, so a
+    callback that reads just those is wrong in two ways that both showed up
+    here: scrolled to the top it still reported the last section, and once
+    several tall cards were on screen at once it stuck on whichever crossed a
+    threshold last. Six sections is few enough that measuring all of them per
+    frame is cheaper than getting the bookkeeping right.
+  */
+  useEffect(() => {
+    const READING_LINE = 140; // clears the top bar and this nav
+    let raf = 0;
+
+    const compute = () => {
+      raf = 0;
+      const els = sections
+        .map((s) => [s.id, document.getElementById(s.id)])
+        .filter(([, el]) => el);
+      if (els.length === 0) return;
+
+      // At the very bottom the last section's top may never reach the reading
+      // line — there is no scroll left to lift it — so it could never read as
+      // current. Pin it when the page bottoms out.
+      const de = document.scrollingElement;
+      if (de.scrollTop + window.innerHeight >= de.scrollHeight - 4) {
+        setActive(els[els.length - 1][0]);
+        return;
+      }
+
+      let current = els[0][0];
+      for (const [id, el] of els) {
+        if (el.getBoundingClientRect().top <= READING_LINE) current = id;
+      }
+      setActive(current);
+    };
+
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(compute);
+    };
+
+    compute();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    // Sections are rendered before their data arrives, so every card grows
+    // once and the offsets measured on mount go stale without a scroll.
+    const ro = new ResizeObserver(schedule);
+    ro.observe(document.body);
+
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      ro.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [sections]);
+
+  return (
+    <nav
+      aria-label="Sections on this view"
+      className="sticky top-[60px] z-20 flex gap-1 overflow-x-auto rounded-card bg-card p-1.5 shadow-ring-lift"
+    >
+      {sections.map((s) => (
+        <button
+          key={s.id}
+          type="button"
+          aria-current={active === s.id ? "true" : undefined}
+          onClick={() => document.getElementById(s.id)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+          className={cn(
+            "shrink-0 rounded-button px-3 py-1.5 text-[12px] font-medium leading-4 transition-colors",
+            active === s.id
+              ? "bg-brand-50 text-brand-700"
+              : "text-muted-foreground hover:bg-surface-subtle hover:text-foreground"
+          )}
+        >
+          {s.label}
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+/* Anchor wrapper. `scroll-mt` clears the sticky top bar plus this view's own
+   sticky section nav, or a jump lands with the heading hidden behind them. */
+function Section({ id, children }) {
+  return (
+    <section id={id} className="scroll-mt-[116px]">
+      {children}
+    </section>
+  );
+}
+
 function ChannelsView({ rev }) {
   const { data, loading } = useAsync(() => getMarketing(), [rev]);
   const { data: creativeData } = useAsync(() => getCreatives(), [rev]);
@@ -530,11 +731,17 @@ function ChannelsView({ rev }) {
 
   return (
     <>
-      <PacingCard pacing={data?.pacing} />
+      <SectionNav sections={CHANNEL_SECTIONS} />
+
+      <Section id="ch-pacing">
+        <PacingCard pacing={data?.pacing} />
+      </Section>
 
       {/* How much, and where — before the retrospective charts. A media
           manager plans forward first and explains backward second. */}
-      <PlannerCard plan={planData?.plan} ladder={planData?.ladder} />
+      <Section id="ch-plan">
+        <PlannerCard plan={planData?.plan} ladder={planData?.ladder} />
+      </Section>
 
       {/* STATE YOUR OWN WINDOW. This product spends a whole card below
           criticising Meta for a generous attribution window while never
@@ -552,6 +759,7 @@ function ChannelsView({ rev }) {
         </p>
       )}
 
+      <Section id="ch-profit">
       <div className="grid gap-4 lg:grid-cols-2">
         <ChartCard title="Which channels are actually profitable?" subtitle="Ranked by CM-ROAS · below break-even = losing money">
           {loading || !data ? (
@@ -572,7 +780,9 @@ function ChannelsView({ rev }) {
           {loading || !data ? <Skeleton className="h-[220px] w-full" /> : <CmRoasTrend data={data.weekly} />}
         </ChartCard>
       </div>
+      </Section>
 
+      <Section id="ch-claims">
       <ChartCard
         title="Where the platforms disagree with your own data"
         subtitle="What each channel claims vs. what Carter can verify against real orders"
@@ -607,9 +817,13 @@ function ChannelsView({ rev }) {
           </div>
         )}
       </ChartCard>
+      </Section>
 
-      <CreativeCard creatives={creativeData?.creatives} />
+      <Section id="ch-creative">
+        <CreativeCard creatives={creativeData?.creatives} />
+      </Section>
 
+      <Section id="ch-campaigns">
       <Card className="overflow-hidden p-0">
         <TableToolbar
           title="Campaign breakdown"
@@ -669,7 +883,7 @@ function ChannelsView({ rev }) {
           </Table>
         )}
       </Card>
-
+      </Section>
     </>
   );
 }
@@ -789,13 +1003,17 @@ function InsightsView() {
               {board && <Badge variant="neutral">{board.actions.length}</Badge>}
             </h2>
             <p className="mb-3 mt-0.5 text-[12px] leading-4 text-neutral-500">
-              Ranked by dollar impact · portfolio-wide cards first, then individual SKUs. Act on one and the numbers above recompute.
+              Grouped by urgency, ranked by dollar impact inside each group. Act on one and the numbers above recompute.
             </p>
             {loading ? (
               <div className="grid gap-4 md:grid-cols-2">{[0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-32 w-full" />)}</div>
             ) : (
-              <div className="grid gap-4 md:grid-cols-2">
-                {board.actions.map((a) => <ActionCard key={a.id} a={a} onApplied={refresh} />)}
+              <div className="space-y-2">
+                {/* The engine already ranks by dollar impact, so grouping
+                    preserves that order inside each section. */}
+                {groupBySeverity(board.actions).map(({ section, actions }, i) => (
+                  <BoardSection key={`${section.id}-${i}`} section={section} actions={actions} onApplied={refresh} />
+                ))}
               </div>
             )}
             {board?.health?.skuInsightsSuppressed > 0 && (

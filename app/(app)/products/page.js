@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Search, PackageSearch, Layers, ArrowLeft } from "lucide-react";
 import { getProducts, getPortfolioRollup } from "@/lib/api";
 import { useAsync } from "@/lib/useAsync";
+import { useTableSort } from "@/lib/useTableSort";
 import { useReportingWindow } from "@/context/DateRangeContext";
 import { QUADRANT_META } from "@/lib/compute/margin";
 import { LIFECYCLE_META } from "@/lib/compute/lifecycle";
@@ -43,8 +44,8 @@ const LIFECYCLE_STAGES = ["introduction", "growth", "maturity", "decline", "unkn
 function QuadrantTag({ q }) {
   const meta = QUADRANT_META[q];
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs">
-      <span className="size-2 rounded-full" style={{ background: meta.color }} />
+    <span className="inline-flex items-center gap-1">
+      <span className="size-1.5 rounded-full" style={{ background: meta.color }} />
       {meta.label}
     </span>
   );
@@ -87,6 +88,11 @@ function MediaVerdict({ p }) {
   are one question asked at two depths.
 */
 function CategoryTable({ rollup, onDrill }) {
+  // Default: worst CM2 movement first. A portfolio table's job is to point at
+  // the category that changed, not to list categories alphabetically.
+  const { sort, setSort, sorted } = useTableSort(rollup?.groups, { key: "totals.delta.cm2.abs", dir: "asc" });
+  const sortProps = { sort, onSortChange: setSort };
+
   if (!rollup) {
     return (
       <Card className="p-4">
@@ -104,17 +110,17 @@ function CategoryTable({ rollup, onDrill }) {
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead>Category</TableHead>
-            <TableHead className="text-right">SKUs</TableHead>
-            <TableHead className="text-right">Revenue</TableHead>
-            <TableHead className="text-right">Ad spend</TableHead>
-            <TableHead className="text-right">CM2</TableHead>
-            <TableHead className="text-right">Δ CM2</TableHead>
-            <TableHead className="text-right">CM-ROAS</TableHead>
+            <TableHead sortKey="label" {...sortProps}>Category</TableHead>
+            <TableHead className="text-right" numeric sortKey="skuCount" {...sortProps}>SKUs</TableHead>
+            <TableHead className="text-right" numeric sortKey="totals.revenue" {...sortProps}>Revenue</TableHead>
+            <TableHead className="text-right" numeric sortKey="totals.adSpend" {...sortProps}>Ad spend</TableHead>
+            <TableHead className="text-right" numeric sortKey="totals.cm2" {...sortProps}>CM2</TableHead>
+            <TableHead className="text-right" numeric sortKey="totals.delta.cm2.abs" {...sortProps}>Δ CM2</TableHead>
+            <TableHead className="text-right" numeric sortKey="totals.cmRoas" {...sortProps}>CM-ROAS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {rollup.groups.map((g) => {
+          {sorted.map((g) => {
             const t = g.totals;
             const dCm2 = t.delta ? signedMoney(t.delta.cm2.abs) : null;
             const dRoas = t.delta ? signedMultiple(t.delta.cmRoas.abs) : null;
@@ -178,6 +184,16 @@ function ProductsView() {
     .filter((p) => (filter === "all" ? true : p.quadrant === filter))
     .filter((p) => (lifecycle === "all" ? true : p.lifecycleStage === lifecycle))
     .filter((p) => p.name.toLowerCase().includes(q.toLowerCase()));
+
+  /*
+    Default CM2 descending. The toolbar has always described this table as
+    "ranked by campaign-level contribution margin" — but `getProducts` returns
+    seed order, so the copy was describing an ordering that never existed.
+    Sorting here makes the sentence true rather than rewriting it, and one
+    click on the column flips to worst-first.
+  */
+  const { sort, setSort, sorted } = useTableSort(rows, { key: "cm2", dir: "desc" });
+  const sortProps = { sort, onSortChange: setSort };
 
   return (
     <PageContainer>
@@ -278,22 +294,27 @@ function ProductsView() {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead>Product</TableHead>
-                <TableHead className="text-right">Revenue</TableHead>
+                <TableHead sortKey="name" {...sortProps}>Product</TableHead>
+                <TableHead className="text-right" numeric sortKey="revenue" {...sortProps}>Revenue</TableHead>
                 {/* Ad spend + verdict came from Reporting's "product-linked
                     ad spend" table, which listed the same SKUs this table
                     already lists. Two tables, one catalogue — now one. */}
-                <TableHead className="text-right">Ad spend</TableHead>
-                <TableHead className="text-right">CM1</TableHead>
-                <TableHead className="text-right">CM2</TableHead>
-                <TableHead className="text-right">Δ CM2</TableHead>
-                <TableHead className="text-right">CM-ROAS</TableHead>
+                <TableHead className="text-right" numeric sortKey="adSpend" {...sortProps}>Ad spend</TableHead>
+                <TableHead className="text-right" numeric sortKey="cm1" {...sortProps}>CM1</TableHead>
+                <TableHead className="text-right" numeric sortKey="cm2" {...sortProps}>CM2</TableHead>
+                <TableHead className="text-right" numeric sortKey="delta.cm2.abs" {...sortProps}>Δ CM2</TableHead>
+                <TableHead className="text-right" numeric sortKey="cmRoas" {...sortProps}>CM-ROAS</TableHead>
+                {/* Quadrant used to sit here as a ninth column, which pushed
+                    the table's intrinsic width past the card and hid CM-ROAS
+                    behind a horizontal scroll at 1440px. It is a
+                    CLASSIFICATION, not a measure — so it moved next to
+                    lifecycle in the product cell, exactly as lifecycle did,
+                    and the eight remaining columns all fit on screen. */}
                 <TableHead>Verdict</TableHead>
-                <TableHead>Quadrant</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {rows.map((p) => (
+              {sorted.map((p) => (
                 <TableRow key={p.id} className="cursor-pointer" onClick={() => router.push(`/products/${p.id}`)}>
                   <TableCell>
                     <div className="flex items-center gap-2.5">
@@ -312,6 +333,8 @@ function ProductsView() {
                           <span>{p.sku}</span>
                           <span className="text-border">·</span>
                           <LifecycleTag stage={p.lifecycleStage} />
+                          <span className="text-border">·</span>
+                          <QuadrantTag q={p.quadrant} />
                         </div>
                       </div>
                     </div>
@@ -338,7 +361,6 @@ function ProductsView() {
                     )}
                   </TableCell>
                   <TableCell><MediaVerdict p={p} /></TableCell>
-                  <TableCell><QuadrantTag q={p.quadrant} /></TableCell>
                 </TableRow>
               ))}
             </TableBody>
